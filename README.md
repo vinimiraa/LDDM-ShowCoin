@@ -48,10 +48,10 @@ praticidade.
 
 ## **3. Benefícios do ShowCoin**
 
-✅ **Economia de Tempo** – Registre despesas rapidamente sem precisar digitar manualmente.
-✅ **Precisão Financeira** – Monitore seus gastos e tome decisões mais conscientes.
-✅ **Melhor Planejamento** – Estabeleça metas e acompanhe seu progresso.
-✅ **Segurança** – Seus dados protegidos com criptografia.
+- ✅ **Economia de Tempo** – Registre despesas rapidamente sem precisar digitar manualmente.
+- ✅ **Precisão Financeira** – Monitore seus gastos e tome decisões mais conscientes.
+- ✅ **Melhor Planejamento** – Estabeleça metas e acompanhe seu progresso.
+- ✅ **Segurança** – Seus dados protegidos com criptografia.
 
 ## **4. Conclusão**
 
