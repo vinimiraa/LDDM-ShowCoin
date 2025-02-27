@@ -60,7 +60,7 @@ Com ele, você economiza tempo, evita surpresas no orçamento e mantém suas fin
 
 ## **Integrantes**
 
-- [André Luis](https://www.linkedin.com/)  
+- [André Luis](https://andrels.net/)  
 - [Breno Pires](https://www.linkedin.com/in/brenopiressantos/)  
 - [Caio Faria](https://www.linkedin.com/in/caiofdiniz)  
 - [Vinícius Miranda](https://www.linkedin.com/in/vinimiraa/)  
