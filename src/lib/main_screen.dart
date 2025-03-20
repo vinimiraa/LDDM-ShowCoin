@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-import 'package:src/screens/qrcode_screen.dart';
+import 'screens/qrcode_screen.dart';
 import 'screens/home_screen.dart';
-import 'screens/details_screen.dart';
+import 'screens/statement_screen.dart';
 import 'screens/profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
