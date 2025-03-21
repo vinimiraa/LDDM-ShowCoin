@@ -20,7 +20,7 @@ class _MainScreenState extends State<MainScreen> {
   List<Widget> _buildScreens() {
     return [
       HomeScreen(),
-      DetailsScreen(),
+      StatementScreen(),
       QRCodeScreen(),
       ProfileScreen(),
     ];
