@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'utils.dart';
 
 class QRCodeScreen extends StatelessWidget {
   const QRCodeScreen({super.key});
@@ -6,11 +7,7 @@ class QRCodeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.orange,
-        title: const Text("QR Code"),
-        centerTitle: true,
-      ),
+      appBar: Utils.buildHeader('QR Code'),
       body: Column(
         children: [
           Expanded(
@@ -30,15 +27,20 @@ class QRCodeScreen extends StatelessWidget {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              "Escaneie o QR Code!",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 50),
+            child: Utils.buildButton(
+              text: "Escaneie o QRCode",
+              onPressed: _scanQRCode, // Chamada correta
             ),
           ),
         ],
       ),
     );
+  }
+
+  // TODO: Implementar a abertura da câmera e leitura do QRCode
+  void _scanQRCode() {
+    debugPrint("Escaneie o QRCode"); // Print para debug
   }
 }
