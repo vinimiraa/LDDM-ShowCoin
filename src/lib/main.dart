@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:src/screens/login_screen.dart';
+import 'package:src/screens/utils.dart';
 import 'main_screen.dart';
 
 void main() {
@@ -12,11 +14,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Show Coin',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: AppColors.background,
+        fontFamily: 'Inter',
       ),
-      home: MainScreen(), // Define a tela inicial
+      home: LoginScreen(), // Define a tela inicial
     );
   }
 }
