@@ -4,6 +4,8 @@ import 'screens/qrcode_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/statement_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/utils.dart';
+import 'screens/login_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -14,7 +16,11 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   // Controlador para gerenciar a navegação
-  final PersistentTabController _controller = PersistentTabController(initialIndex: 0);
+  final PersistentTabController _controller = PersistentTabController( initialIndex: 0 );
+
+  final Color _backgroundNavBar = AppColors.backgroundNavBar;
+  final Color _activeColorButton = AppColors.activeNavBarButton;
+  final Color _inactiveColorButton = AppColors.inativeNavBarButton;
 
   // Lista de telas que serão exibidas em cada aba
   List<Widget> _buildScreens() {
@@ -22,7 +28,7 @@ class _MainScreenState extends State<MainScreen> {
       HomeScreen(),
       StatementScreen(),
       QRCodeScreen(),
-      ProfileScreen(),
+      ProfileScreen()
     ];
   }
 
@@ -32,26 +38,34 @@ class _MainScreenState extends State<MainScreen> {
       PersistentBottomNavBarItem(
         icon: Icon(Icons.home),
         title: "Home",
-        activeColorPrimary: Colors.blue,
-        inactiveColorPrimary: Colors.grey,
+        activeColorPrimary: _activeColorButton,
+        inactiveColorPrimary: _inactiveColorButton,
+        // ? Configuração de rota, talvez seja útil futuramente, exemplo:
+        // routeAndNavigatorSettings: RouteAndNavigatorSettings(
+        //   initialRoute: "/",
+        //   routes: {
+        //   "/first": (final context) => const MainScreen2(),
+        //   "/second": (final context) => const MainScreen3(),
+        //   },
+        // ),
       ),
       PersistentBottomNavBarItem(
         icon: Icon(Icons.graphic_eq),
         title: "Detalhes",
-        activeColorPrimary: Colors.blue,
-        inactiveColorPrimary: Colors.grey,
+        activeColorPrimary: _activeColorButton,
+        inactiveColorPrimary: _inactiveColorButton,
       ),
       PersistentBottomNavBarItem(
         icon: Icon(Icons.qr_code),
         title: "QRCode",
-        activeColorPrimary: Colors.blue,
-        inactiveColorPrimary: Colors.grey,
+        activeColorPrimary: _activeColorButton,
+        inactiveColorPrimary: _inactiveColorButton,
       ),
       PersistentBottomNavBarItem(
         icon: Icon(Icons.person),
         title: "Perfil",
-        activeColorPrimary: Colors.blue,
-        inactiveColorPrimary: Colors.grey,
+        activeColorPrimary: _activeColorButton,
+        inactiveColorPrimary: _inactiveColorButton,
       ),
     ];
   }
@@ -63,13 +77,31 @@ class _MainScreenState extends State<MainScreen> {
       controller: _controller,
       screens: _buildScreens(),
       items: _navBarsItems(),
-      confineToSafeArea: true,
-      backgroundColor: const Color(0x00df9a04),
-      handleAndroidBackButtonPress: true,
-      resizeToAvoidBottomInset: true,
-      stateManagement: true,
+      handleAndroidBackButtonPress: true, // Padrão é verdadeiro.
+      resizeToAvoidBottomInset:
+          true, // Isso precisa ser verdadeiro se você deseja mover a tela para cima em uma tela não rolável quando o teclado aparece. O padrão é verdadeiro.
+      stateManagement: true, // Padrão é true
       hideNavigationBarWhenKeyboardAppears: true,
-      navBarStyle: NavBarStyle.style9, // Define o estilo da navbar
+      popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
+      padding: const EdgeInsets.only(top: 8, bottom: 8),
+      backgroundColor: _backgroundNavBar,
+      isVisible: true,
+      animationSettings: const NavBarAnimationSettings(
+        navBarItemAnimation: ItemAnimationSettings(
+          // Propriedades de animação dos itens da Navbar
+          duration: Duration(milliseconds: 400),
+          curve: Curves.ease,
+        ),
+        screenTransitionAnimation: ScreenTransitionAnimationSettings(
+          // Transição de tela ao mudar de aba
+          animateTabTransition: true,
+          duration: Duration(milliseconds: 200),
+          screenTransitionAnimationType: ScreenTransitionAnimationType.fadeIn,
+        ),
+      ),
+      confineToSafeArea: true,
+      navBarHeight: kBottomNavigationBarHeight,
+      navBarStyle: NavBarStyle.style9, // Escolha o estilo da Navbar
     );
   }
 }
