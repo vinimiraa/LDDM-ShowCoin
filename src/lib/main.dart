@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:src/screens/login_screen.dart';
+import 'package:src/screens/start_screen.dart';
 import 'package:src/screens/utils.dart';
-import 'main_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: AppColors.background,
         fontFamily: 'Inter',
       ),
-      home: LoginScreen(), // Define a tela inicial
+      home: StartScreen(), // Define a tela inicial
     );
   }
 }

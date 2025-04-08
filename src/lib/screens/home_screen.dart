@@ -46,6 +46,25 @@ class HomeScreen extends StatelessWidget {
               },
               child: Text("Teste Alerta"),
             ),
+
+            // ! TESTE TEXT
+            Utils.buildText(
+              "Teste de texto", 
+              color: AppColors.textSecondary,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              marginTop: 20,
+              marginBottom: 20,
+            ),
+
+            Utils.buildText(
+              "Teste de texto 2", 
+              color: const Color.fromARGB(255, 157, 212, 47),
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              marginTop: 5,
+              marginBottom: 5,
+            ),
           ],
         ),
       ),

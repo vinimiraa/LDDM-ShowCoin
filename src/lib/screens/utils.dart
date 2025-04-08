@@ -22,7 +22,7 @@ class Utils {
    * 
    *  @param title - Título do AppBar
    */
-  static AppBar buildHeader(String title) {
+  static AppBar buildHeader(String title,) {
     return AppBar(
       backgroundColor: AppColors.header,
       title: Text(
@@ -33,6 +33,11 @@ class Utils {
     );
   } // buildHeader
 
+  /**
+   *  Cria um rodapé com informações de direitos autorais
+   *  
+   *  @returns - Widget do rodapé
+   */
   static Widget buildFooter( )
   {
     return BottomAppBar(
@@ -102,6 +107,55 @@ class Utils {
       ),
     );
   } // buildButton
+
+  static Widget buildText( 
+    String text, {
+      Color color = AppColors.textPrimary,
+      double fontSize = 14,
+      FontWeight fontWeight = FontWeight.normal,
+      TextAlign textAlign = TextAlign.start,
+      TextOverflow overflow = TextOverflow.ellipsis,
+      int maxLines = 1,
+      double? padTop,
+      double? padBottom,
+      double? padLeft,
+      double? padRight,
+      double? marginTop,
+      double? marginBottom,
+      double? marginLeft,
+      double? marginRight,
+    }) {
+    return Padding(
+      padding: EdgeInsets.only(
+        top: padTop ?? 0,
+        bottom: padBottom ?? 0,
+        left: padLeft ?? 0,
+        right: padRight ?? 0,
+      ),
+      child: Container(
+        margin: EdgeInsets.only(
+          top: marginTop ?? 0,
+          bottom: marginBottom ?? 0,
+          left: marginLeft ?? 0,
+          right: marginRight ?? 0,
+        ),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            text,
+            style: TextStyle(
+              color: color,
+              fontSize: fontSize,
+              fontWeight: fontWeight,
+            ),
+            textAlign: textAlign,
+            overflow: overflow,
+            maxLines: maxLines,
+          ),
+        ),
+      ),
+    );
+  } // buildText
 
   /**
    *  Cria um campo de texto com o label, o controller, o tipo e a visibilidade
