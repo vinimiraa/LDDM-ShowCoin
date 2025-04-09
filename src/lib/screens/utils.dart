@@ -12,7 +12,7 @@ class AppColors {
   static const Color header = Color(0xFFdf9a04);
   static const Color background = Color(0xFFFFFFFF);
   // Text
-  static const Color textPrimary = Color(0x00000000);
+  static const Color textPrimary = Colors.black;
   static const Color textSecondary = Color(0xFF093030);
 }
 

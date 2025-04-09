@@ -59,32 +59,39 @@ class TransactionDetailsScreen extends StatelessWidget {
                 ],
               ),
             ] else ...[
-              // Formulário para criar uma nova transação
-              Utils.buildInputField(
-                "Descrição",
-                controller: TextEditingController(),
-                type: TextInputType.text,
-                obscure: false,
-                width: 300,
-              ),
-              Utils.buildInputField(
-                "Valor",
-                controller: TextEditingController(),
-                type: TextInputType.number,
-                obscure: false,
-                width: 300,
-              ),
-              Utils.buildInputField(
-                "Data",
-                controller: TextEditingController(),
-                type: TextInputType.datetime,
-                obscure: false,
-                width: 300,
-              ),
-              Utils.buildButton(
-                text: "Salvar",
-                width: 250,
-                onPressed: _salvarNovaTransacao,
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Formulário para criar uma nova transação
+                    Utils.buildInputField(
+                      "Descrição",
+                      controller: TextEditingController(),
+                      type: TextInputType.text,
+                      obscure: false,
+                      width: 300,
+                    ),
+                    Utils.buildInputField(
+                      "Valor",
+                      controller: TextEditingController(),
+                      type: TextInputType.number,
+                      obscure: false,
+                      width: 300,
+                    ),
+                    Utils.buildInputField(
+                      "Data",
+                      controller: TextEditingController(),
+                      type: TextInputType.datetime,
+                      obscure: false,
+                      width: 300,
+                    ),
+                    Utils.buildButton(
+                      text: "Salvar",
+                      width: 250,
+                      onPressed: _salvarNovaTransacao,
+                    ),
+                  ],
+                ),
               ),
             ],
           ],
@@ -96,18 +103,18 @@ class TransactionDetailsScreen extends StatelessWidget {
   // TODO: Implementar a lógica para editar a transação
   void _editarTransacao() {
     // Lógica para editar a transação
-    debugPrint( "Editando transação..." );
+    debugPrint("Editando transação...");
   }
 
   // TODO: Implementar a lógica para excluir a transação
   void _excluirTransacao() {
     // Lógica para excluir a transação
-    debugPrint( "Excluindo transação..." );
+    debugPrint("Excluindo transação...");
   }
 
   // TODO: Implementar a lógica para salvar uma nova transação
   void _salvarNovaTransacao() {
     // Lógica para salvar a nova transação
-    debugPrint( "Salvando nova transação..." );
+    debugPrint("Salvando nova transação...");
   }
 }

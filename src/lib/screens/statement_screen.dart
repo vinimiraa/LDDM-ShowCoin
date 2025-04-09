@@ -26,6 +26,9 @@ class StatementScreen extends StatelessWidget {
             MaterialPageRoute(builder: (context) => const TransactionDetailsScreen(isNewTransaction: true)),
           );
         },
+        backgroundColor: AppColors.backgroundButton,
+        foregroundColor: Colors.white,
+        shape: const CircleBorder(),
         child: const Icon(Icons.add),
       ),
     );
