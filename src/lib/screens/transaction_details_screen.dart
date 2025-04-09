@@ -45,18 +45,21 @@ class TransactionDetailsScreen extends StatelessWidget {
                 style: const TextStyle(fontSize: 18),
               ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Utils.buildButton(
-                    text: "Editar",
-                    onPressed: _editarTransacao,
-                  ),
-                  Utils.buildButton(
-                    text: "Excluir",
-                    onPressed: _excluirTransacao,
-                  ),
-                ],
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Utils.buildButton(
+                      text: "Editar",
+                      onPressed: _editarTransacao,
+                    ),
+                    const SizedBox(height: 10),
+                    Utils.buildButton(
+                      text: "Excluir",
+                      onPressed: _excluirTransacao,
+                    ),
+                  ],
+                ),
               ),
             ] else ...[
               Center(
