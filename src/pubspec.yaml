@@ -37,6 +37,8 @@ dependencies:
   persistent_bottom_nav_bar: any
   animations: ^2.0.11
   intl: ^0.20.2
+  graphic: ^2.5.1
+  fl_chart: ^0.70.2
 
 dev_dependencies:
   flutter_test:
