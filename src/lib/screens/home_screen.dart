@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'graphic_test.dart';
 import 'utils.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -11,71 +12,111 @@ class HomeScreen extends StatelessWidget {
       appBar: Utils.buildHeader('Home'),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // ! TESTE BOTÃO
-            Utils.buildButton(text: "Teste", onPressed: _apertaBotao),
-
-            // ! TESTE INPUT
-            Utils.buildInputField(
-              "Teste",
-              controller: TextEditingController(),
-              type: TextInputType.text,
-              obscure: false,
-            ),
-
-            Utils.buildInputField(
-              "Senha",
-              controller: TextEditingController(),
-              type: TextInputType.text,
-              obscure: true,
-              width: 300, // Define a largura do campo
-            ),
-
-            // ! TESTE ALERT
-            ElevatedButton(
-              onPressed: () {
-                Utils.showAlertDialog(
-                  context,
-                  "Encerrar Sessão",
-                  "Você tem certeza ?",
-                  onConfirm: _apertaConfirmar,
-                  confirmText: "Sei lá porra kkkkk",
-                  cancelText: "Kero naum",
-                );
-              },
-              child: Text("Teste Alerta"),
-            ),
-
-            // ! TESTE TEXT
             Utils.buildText(
-              "Teste de texto", 
-              color: AppColors.textSecondary,
+              "Ganhos e Despesas",
+              color: AppColors.textPrimary,
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              marginTop: 20,
-              marginBottom: 20,
+              marginBottom: 10,
+              marginTop: 10
             ),
-
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.orange,
+                      width: 2,
+                    ), // Borda laranja
+                    borderRadius: BorderRadius.circular(
+                      8,
+                    ), // Bordas arredondadas
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.arrow_downward, color: Colors.green),
+                      const SizedBox(width: 5),
+                      Text(
+                        "R\$ 2.000,00", // Valor de entrada
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.orange,
+                      width: 2,
+                    ), // Borda laranja
+                    borderRadius: BorderRadius.circular(
+                      8,
+                    ), // Bordas arredondadas
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.arrow_upward, color: Colors.red),
+                      const SizedBox(width: 5),
+                      Text(
+                        "R\$ 1.200,00", // Valor de saída
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const PieChartGanhoDespesa(),
             Utils.buildText(
-              "Teste de texto 2", 
-              color: const Color.fromARGB(255, 157, 212, 47),
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              marginTop: 5,
-              marginBottom: 5,
+              "Meta de Gastos desse Mês",
+              color: AppColors.textPrimary,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              marginBottom: 10,
+            ),
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              width: 180,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.orange,
+                  width: 2,
+                ), // Borda laranja
+                borderRadius: BorderRadius.circular(8), // Bordas arredondadas
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.arrow_upward, color: Colors.red),
+                  const SizedBox(width: 5),
+                  Text(
+                    "R\$ 1.500,00", // Valor de saída
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  void _apertaBotao() {
-    debugPrint("Botão apertado (lá ele kkkkkkkkkkkkj)");
-  }
-
-  void _apertaConfirmar() {
-    debugPrint("Sei lá porra apertado XDXDXD");
   }
 }
