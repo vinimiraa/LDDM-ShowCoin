@@ -3,7 +3,7 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'screens/qrcode_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/statement_screen.dart';
-import 'screens/profile_screen.dart';
+import 'screens/settings_screen.dart';
 import 'screens/utils.dart';
 import 'screens/login_screen.dart';
 
@@ -28,7 +28,7 @@ class _MainScreenState extends State<MainScreen> {
       HomeScreen(),
       StatementScreen(),
       QRCodeScreen(),
-      ProfileScreen()
+      SettingsScreen()
     ];
   }
 
