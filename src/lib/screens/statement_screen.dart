@@ -1,30 +1,67 @@
 import 'package:flutter/material.dart';
-import 'transaction_details_screen.dart'; // Nova tela de detalhes
+import 'transaction_details_screen.dart';
 import 'utils.dart';
+import '../database/db.dart';
+import '../controllers/transaction_controller.dart';
 
-class StatementScreen extends StatelessWidget {
+class StatementScreen extends StatefulWidget {
   const StatementScreen({super.key});
+
+  @override
+  State<StatementScreen> createState() => _StatementScreenState();
+}
+
+class _StatementScreenState extends State<StatementScreen> {
+  List<Map<String, dynamic>> _transactions = [];
+
+  void _onTransactionsChanged() {
+    setState(() {
+      _transactions = transactionController.transactions;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    transactionController.addListener(_onTransactionsChanged);
+    transactionController.loadTransactions();
+  }
+
+  @override
+  void dispose() {
+    transactionController.removeListener(_onTransactionsChanged);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Utils.buildHeader('Extrato'),
-      body: ListView(
+      body: ListView.builder(
         padding: const EdgeInsets.all(16.0),
-        children: [
-          _buildTransactionItem(context, 'Salário', 2000.00, '05 Set 2024', Icons.monetization_on, true),
-          _buildTransactionItem(context, 'Alimentação', -45.00, '12 Set 2024', Icons.restaurant, false),
-          _buildTransactionItem(context, 'Compras', -73.47, '19 Set 2024', Icons.shopping_bag, false),
-          _buildTransactionItem(context, 'Pix', 25.00, '27 Set 2024', Icons.send, true),
-        ],
+        itemCount: _transactions.length,
+        itemBuilder: (context, index) {
+          final t = _transactions[index];
+          final title = t['title'] as String;
+          final amount = t['amount'] as double;
+          final date = t['date'] as String;
+          final isPositive = amount >= 0;
+
+          return _buildTransactionItem(context, title, amount, date, isPositive);
+        },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO Lógica para criar uma nova transação
-          Navigator.push(
+        onPressed: () async {
+          final result = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const TransactionDetailsScreen(isNewTransaction: true)),
+            MaterialPageRoute(
+              builder: (context) => const TransactionDetailsScreen(isNewTransaction: true),
+            ),
           );
+
+          if (result == true) {
+            await transactionController.loadTransactions();
+          }
         },
         backgroundColor: AppColors.backgroundButton,
         foregroundColor: Colors.white,
@@ -34,11 +71,18 @@ class StatementScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTransactionItem(BuildContext context, String title, double amount, String date, IconData icon, bool isPositive) {
+  Widget _buildTransactionItem(
+    BuildContext context,
+    String title,
+    double amount,
+    String date,
+    bool isPositive,
+  ) {
+    final icon = isPositive ? Icons.monetization_on : Icons.shopping_cart;
+
     return TextButton(
-      onPressed: () {
-        // Navega para a tela de detalhes da transação
-        Navigator.push(
+      onPressed: () async {
+        final result = await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => TransactionDetailsScreen(
@@ -49,6 +93,10 @@ class StatementScreen extends StatelessWidget {
             ),
           ),
         );
+
+        if (result == true) {
+          await transactionController.loadTransactions();
+        }
       },
       child: ListTile(
         leading: Icon(icon, size: 40, color: Colors.amber),

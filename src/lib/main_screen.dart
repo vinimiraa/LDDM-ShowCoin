@@ -5,7 +5,6 @@ import 'screens/home_screen.dart';
 import 'screens/statement_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/utils.dart';
-import 'screens/login_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -15,54 +14,55 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  // Controlador para gerenciar a navegação
-  final PersistentTabController _controller = PersistentTabController( initialIndex: 0 );
-
+  final PersistentTabController _controller = PersistentTabController(initialIndex: 0);
   final Color _backgroundNavBar = AppColors.backgroundNavBar;
   final Color _activeColorButton = AppColors.activeNavBarButton;
   final Color _inactiveColorButton = AppColors.inativeNavBarButton;
 
-  // Lista de telas que serão exibidas em cada aba
+  late List<Widget> _screens;
+  int _previousIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = _buildScreens();
+  }
+
   List<Widget> _buildScreens() {
     return [
-      HomeScreen(),
-      StatementScreen(),
-      QRCodeScreen(),
-      SettingsScreen()
+      HomeScreen(
+        onFocus: () {
+          print("HomeScreen focada");
+        },
+      ),
+      const StatementScreen(),
+      const QRCodeScreen(),
+      const SettingsScreen(),
     ];
   }
 
-  // Configuração dos itens da Navbar
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
       PersistentBottomNavBarItem(
-        icon: Icon(Icons.home),
+        icon: const Icon(Icons.home),
         title: "Home",
         activeColorPrimary: _activeColorButton,
         inactiveColorPrimary: _inactiveColorButton,
-        // ? Configuração de rota, talvez seja útil futuramente, exemplo:
-        // routeAndNavigatorSettings: RouteAndNavigatorSettings(
-        //   initialRoute: "/",
-        //   routes: {
-        //   "/first": (final context) => const MainScreen2(),
-        //   "/second": (final context) => const MainScreen3(),
-        //   },
-        // ),
       ),
       PersistentBottomNavBarItem(
-        icon: Icon(Icons.graphic_eq),
+        icon: const Icon(Icons.graphic_eq),
         title: "Detalhes",
         activeColorPrimary: _activeColorButton,
         inactiveColorPrimary: _inactiveColorButton,
       ),
       PersistentBottomNavBarItem(
-        icon: Icon(Icons.qr_code),
+        icon: const Icon(Icons.qr_code),
         title: "QRCode",
         activeColorPrimary: _activeColorButton,
         inactiveColorPrimary: _inactiveColorButton,
       ),
       PersistentBottomNavBarItem(
-        icon: Icon(Icons.person),
+        icon: const Icon(Icons.person),
         title: "Perfil",
         activeColorPrimary: _activeColorButton,
         inactiveColorPrimary: _inactiveColorButton,
@@ -75,25 +75,34 @@ class _MainScreenState extends State<MainScreen> {
     return PersistentTabView(
       context,
       controller: _controller,
-      screens: _buildScreens(),
+      screens: _screens,
       items: _navBarsItems(),
-      handleAndroidBackButtonPress: true, // Padrão é verdadeiro.
-      resizeToAvoidBottomInset:
-          true, // Isso precisa ser verdadeiro se você deseja mover a tela para cima em uma tela não rolável quando o teclado aparece. O padrão é verdadeiro.
-      stateManagement: true, // Padrão é true
+      handleAndroidBackButtonPress: true,
+      resizeToAvoidBottomInset: true,
+      stateManagement: false,
       hideNavigationBarWhenKeyboardAppears: true,
       popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
       padding: const EdgeInsets.only(top: 8, bottom: 8),
       backgroundColor: _backgroundNavBar,
       isVisible: true,
+      onItemSelected: (int index) {
+        if (index == 0 && _previousIndex != 0) {
+          setState(() {
+            _screens[0] = HomeScreen(
+              onFocus: () {
+                print("Recarregando HomeScreen após voltar para a aba");
+              },
+            );
+          });
+        }
+        _previousIndex = index;
+      },
       animationSettings: const NavBarAnimationSettings(
         navBarItemAnimation: ItemAnimationSettings(
-          // Propriedades de animação dos itens da Navbar
           duration: Duration(milliseconds: 400),
           curve: Curves.ease,
         ),
         screenTransitionAnimation: ScreenTransitionAnimationSettings(
-          // Transição de tela ao mudar de aba
           animateTabTransition: true,
           duration: Duration(milliseconds: 200),
           screenTransitionAnimationType: ScreenTransitionAnimationType.fadeIn,
@@ -101,7 +110,7 @@ class _MainScreenState extends State<MainScreen> {
       ),
       confineToSafeArea: true,
       navBarHeight: kBottomNavigationBarHeight,
-      navBarStyle: NavBarStyle.style9, // Escolha o estilo da Navbar
+      navBarStyle: NavBarStyle.style9,
     );
   }
 }

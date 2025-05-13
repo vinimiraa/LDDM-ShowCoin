@@ -80,7 +80,6 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  // TODO: Implementar a criação de conta
   void _criarConta( BuildContext context) {
     debugPrint("Criando conta...");
     Navigator.push(
@@ -89,7 +88,6 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  // TODO: Implementar a recuperação de senha
   void _recuperarSenha( BuildContext context) {
     debugPrint("Esqueci a senha...");
   }

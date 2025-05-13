@@ -2,13 +2,23 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class PieChartGanhoDespesa extends StatefulWidget {
-  const PieChartGanhoDespesa({super.key});
+  final double totalGanho;
+  final double totalDespesa;
+
+
+
+  const PieChartGanhoDespesa({
+    super.key,
+    required this.totalGanho,
+    required this.totalDespesa,
+  });
 
   @override
   State<StatefulWidget> createState() => PieChartGanhoDespesaState();
 }
 
-class PieChartGanhoDespesaState extends State {
+
+class PieChartGanhoDespesaState extends State<PieChartGanhoDespesa> {
   int touchedIndex = -1;
 
   @override
@@ -81,12 +91,15 @@ class PieChartGanhoDespesaState extends State {
     final despesaRadius = isDespesaTouched ? 60.0 : 50.0;
 
     const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
+    double total = widget.totalGanho + widget.totalDespesa;
+    double ganhoPercent = total > 0 ? (widget.totalGanho / total) * 100 : 0;
+    double despesaPercent = total > 0 ? (widget.totalDespesa / total) * 100 : 0;
 
     return [
       PieChartSectionData(
         color: GAppColors.contentColorGreen,
-        value: 60,
-        title: '60%',
+        value: ganhoPercent,
+        title: '${ganhoPercent.toStringAsFixed(1)}%',
         radius: ganhoRadius,
         titleStyle: TextStyle(
           fontSize: ganhoFontSize,
@@ -97,8 +110,8 @@ class PieChartGanhoDespesaState extends State {
       ),
       PieChartSectionData(
         color: GAppColors.contentColorRed,
-        value: 40,
-        title: '40%',
+        value: despesaPercent,
+        title: '${despesaPercent.toStringAsFixed(1)}%',
         radius: despesaRadius,
         titleStyle: TextStyle(
           fontSize: despesaFontSize,
