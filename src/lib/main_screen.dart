@@ -14,7 +14,11 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final PersistentTabController _controller = PersistentTabController(initialIndex: 0);
+  // Controlador para gerenciar a navegação
+  final PersistentTabController _controller = PersistentTabController(
+    initialIndex: 0,
+  );
+
   final Color _backgroundNavBar = AppColors.backgroundNavBar;
   final Color _activeColorButton = AppColors.activeNavBarButton;
   final Color _inactiveColorButton = AppColors.inativeNavBarButton;
@@ -30,14 +34,12 @@ class _MainScreenState extends State<MainScreen> {
 
   List<Widget> _buildScreens() {
     return [
-      HomeScreen(
-        onFocus: () {
-          print("HomeScreen focada");
-        },
-      ),
-      const StatementScreen(),
-      const QRCodeScreen(),
-      const SettingsScreen(),
+      HomeScreen(),
+      StatementScreen(),
+      QRCodeScreen(
+        controller: _controller,
+      ), // Passa o controlador para o QRCodeScreen
+      SettingsScreen(),
     ];
   }
 
@@ -96,6 +98,13 @@ class _MainScreenState extends State<MainScreen> {
           });
         }
         _previousIndex = index;
+      },
+      onWillPop: (context) async {
+        if (_controller.index != 0) {
+          _controller.jumpToTab(0); // Volta para a aba inicial
+          return false;
+        }
+        return true;
       },
       animationSettings: const NavBarAnimationSettings(
         navBarItemAnimation: ItemAnimationSettings(

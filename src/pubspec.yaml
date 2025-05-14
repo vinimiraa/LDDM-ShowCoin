@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.7.2
+  sdk: ^3.7.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -41,6 +41,9 @@ dependencies:
   fl_chart: ^0.70.2
   sqflite: ^2.0.0+4
   path: ^1.8.1
+  http: ^1.4.0
+  html: ^0.15.6
+  mobile_scanner: ^7.0.0
 
 dev_dependencies:
   flutter_test:
