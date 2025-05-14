@@ -1,22 +1,20 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:src/screens/utils.dart';
 
 class PieChartGanhoDespesa extends StatefulWidget {
-  final double totalGanho;
-  final double totalDespesa;
-
-
+  final double limiteGasto;
+  final double totalGasto;
 
   const PieChartGanhoDespesa({
     super.key,
-    required this.totalGanho,
-    required this.totalDespesa,
+    required this.limiteGasto,
+    required this.totalGasto,
   });
 
   @override
   State<StatefulWidget> createState() => PieChartGanhoDespesaState();
 }
-
 
 class PieChartGanhoDespesaState extends State<PieChartGanhoDespesa> {
   int touchedIndex = -1;
@@ -24,85 +22,109 @@ class PieChartGanhoDespesaState extends State<PieChartGanhoDespesa> {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 1.3,
-      child: Row(
-        children: <Widget>[
-          const SizedBox(
-            height: 12,
-          ),
-          Expanded(
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: PieChart(
-                PieChartData(
-                  pieTouchData: PieTouchData(
-                    touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                      setState(() {
-                        if (!event.isInterestedForInteractions ||
-                            pieTouchResponse == null ||
-                            pieTouchResponse.touchedSection == null) {
-                          touchedIndex = -1;
-                          return;
-                        }
-                        touchedIndex =
-                            pieTouchResponse.touchedSection!.touchedSectionIndex;
-                      });
-                    },
-                  ),
-                  borderData: FlBorderData(show: false),
-                  sectionsSpace: 2,
-                  centerSpaceRadius: 40,
-                  sections: showingSections(),
+      aspectRatio: 1.2,
+      child: Column(
+        children: [
+          const SizedBox(height: 24),
+          if (widget.totalGasto > widget.limiteGasto)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(
+                  Icons.warning,
+                  color: AppColors.contentColorRed,
+                  size: 24
                 ),
+                SizedBox(width: 6),
+                Text(
+                  'Limite ultrapassado',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.contentColorRed,
+                  ),
+                ),
+              ],
+            ),
+
+          Expanded(
+            child: PieChart(
+              PieChartData(
+                pieTouchData: PieTouchData(
+                  touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                    setState(() {
+                      if (!event.isInterestedForInteractions ||
+                          pieTouchResponse == null ||
+                          pieTouchResponse.touchedSection == null) {
+                        touchedIndex = -1;
+                        return;
+                      }
+                      touchedIndex =
+                          pieTouchResponse.touchedSection!.touchedSectionIndex;
+                    });
+                  },
+                ),
+                borderData: FlBorderData(show: false),
+                sectionsSpace: 2,
+                centerSpaceRadius: 40,
+                sections: showingSections(),
               ),
             ),
           ),
-          Column(
+
+          const SizedBox(height: 16),
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const <Widget>[
+            children: const [
               Indicator(
                 color: GAppColors.contentColorGreen,
-                text: 'Ganho',
+                text: 'Limite Restante',
                 isSquare: true,
               ),
-              SizedBox(height: 4),
+              SizedBox(width: 20),
               Indicator(
                 color: GAppColors.contentColorRed,
-                text: 'Despesa',
+                text: 'Despesas',
                 isSquare: true,
               ),
             ],
           ),
-          const SizedBox(width: 20),
+          const SizedBox(height: 16),
         ],
       ),
     );
   }
 
   List<PieChartSectionData> showingSections() {
-    final isGanhoTouched = touchedIndex == 0;
+    final isLimiteRestanteTouched = touchedIndex == 0;
     final isDespesaTouched = touchedIndex == 1;
 
-    final ganhoFontSize = isGanhoTouched ? 25.0 : 16.0;
-    final ganhoRadius = isGanhoTouched ? 60.0 : 50.0;
+    final limiteFontSize = isLimiteRestanteTouched ? 25.0 : 16.0;
+    final limiteRadius = isLimiteRestanteTouched ? 60.0 : 50.0;
 
     final despesaFontSize = isDespesaTouched ? 25.0 : 16.0;
     final despesaRadius = isDespesaTouched ? 60.0 : 50.0;
 
     const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
-    double total = widget.totalGanho + widget.totalDespesa;
-    double ganhoPercent = total > 0 ? (widget.totalGanho / total) * 100 : 0;
-    double despesaPercent = total > 0 ? (widget.totalDespesa / total) * 100 : 0;
+
+    double limiteRestante = (widget.limiteGasto - widget.totalGasto).clamp(
+      0,
+      widget.limiteGasto,
+    );
+    double despesa = widget.totalGasto;
+
+    double total = limiteRestante + despesa;
+    double limitePercent = total > 0 ? (limiteRestante / total) * 100 : 0;
+    double despesaPercent = total > 0 ? (despesa / total) * 100 : 0;
 
     return [
       PieChartSectionData(
         color: GAppColors.contentColorGreen,
-        value: ganhoPercent,
-        title: '${ganhoPercent.toStringAsFixed(1)}%',
-        radius: ganhoRadius,
+        value: limitePercent,
+        title: '${limitePercent.toStringAsFixed(1)}%',
+        radius: limiteRadius,
         titleStyle: TextStyle(
-          fontSize: ganhoFontSize,
+          fontSize: limiteFontSize,
           fontWeight: FontWeight.bold,
           color: GAppColors.mainTextColor1,
           shadows: shadows,
@@ -151,9 +173,7 @@ class Indicator extends StatelessWidget {
             color: color,
           ),
         ),
-        const SizedBox(
-          width: 4,
-        ),
+        const SizedBox(width: 4),
         Text(
           text,
           style: TextStyle(
@@ -161,7 +181,7 @@ class Indicator extends StatelessWidget {
             fontWeight: FontWeight.bold,
             color: textColor,
           ),
-        )
+        ),
       ],
     );
   }
@@ -184,7 +204,7 @@ class GAppColors {
   static const Color contentColorBlue = Color(0xFF2196F3);
   static const Color contentColorYellow = Color(0xFFFFC300);
   static const Color contentColorOrange = Color(0xFFFF683B);
-  static const Color contentColorGreen = Color(0xFF3BFF49);
+  static const Color contentColorGreen = Color(0xFF28812E);
   static const Color contentColorPurple = Color(0xFF6E1BFF);
   static const Color contentColorPink = Color(0xFFFF3AF2);
   static const Color contentColorRed = Color(0xFFE80054);

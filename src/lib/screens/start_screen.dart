@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
+import '/../main_screen.dart';
 import 'utils.dart';
 
 class StartScreen extends StatelessWidget {
@@ -23,7 +23,7 @@ class StartScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 40.0),
                 child: Image.asset(
                   'assets/images/showcoin_icon.png',
-                  width: 150, 
+                  width: 150,
                 ),
               ),
               Utils.buildText(
@@ -44,7 +44,7 @@ class StartScreen extends StatelessWidget {
                   debugPrint("Começando no app ...");
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    MaterialPageRoute(builder: (context) => const MainScreen()),
                   );
                 },
               ),

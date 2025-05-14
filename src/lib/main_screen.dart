@@ -34,11 +34,13 @@ class _MainScreenState extends State<MainScreen> {
 
   List<Widget> _buildScreens() {
     return [
-      HomeScreen(),
+      HomeScreen(
+        controller: _controller,
+      ),
       StatementScreen(),
       QRCodeScreen(
         controller: _controller,
-      ), // Passa o controlador para o QRCodeScreen
+      ),
       SettingsScreen(),
     ];
   }
@@ -64,8 +66,8 @@ class _MainScreenState extends State<MainScreen> {
         inactiveColorPrimary: _inactiveColorButton,
       ),
       PersistentBottomNavBarItem(
-        icon: const Icon(Icons.person),
-        title: "Perfil",
+        icon: const Icon(Icons.settings),
+        title: "Configurações",
         activeColorPrimary: _activeColorButton,
         inactiveColorPrimary: _inactiveColorButton,
       ),
@@ -81,24 +83,12 @@ class _MainScreenState extends State<MainScreen> {
       items: _navBarsItems(),
       handleAndroidBackButtonPress: true,
       resizeToAvoidBottomInset: true,
-      stateManagement: false,
+      stateManagement: true,
       hideNavigationBarWhenKeyboardAppears: true,
       popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
       padding: const EdgeInsets.only(top: 8, bottom: 8),
       backgroundColor: _backgroundNavBar,
       isVisible: true,
-      onItemSelected: (int index) {
-        if (index == 0 && _previousIndex != 0) {
-          setState(() {
-            _screens[0] = HomeScreen(
-              onFocus: () {
-                print("Recarregando HomeScreen após voltar para a aba");
-              },
-            );
-          });
-        }
-        _previousIndex = index;
-      },
       onWillPop: (context) async {
         if (_controller.index != 0) {
           _controller.jumpToTab(0); // Volta para a aba inicial
