@@ -103,11 +103,11 @@ class _StatementScreenState extends State<StatementScreen> {
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(date),
         trailing: Text(
-          "${isPositive ? '+' : '-'} R\$${amount.toStringAsFixed(2)}",
+          "${isPositive ? '-' : '-'} R\$${amount.toStringAsFixed(2)}",
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: isPositive ? Colors.green : Colors.red,
+            color: isPositive ? const Color.fromRGBO(244, 67, 54, 1) : const Color.fromRGBO(244, 67, 54, 1),
           ),
         ),
       ),

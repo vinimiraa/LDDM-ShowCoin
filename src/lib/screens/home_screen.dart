@@ -43,39 +43,57 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
-  Future<void> carregarValores() async {
-    final db = await DatabaseHelper().database;
-    final result = await db.rawQuery('''
-      SELECT i.valor, i.nome
-      FROM Item i
-      JOIN Possui p ON p.item_id = i.id
-      JOIN Compra c ON c.id = p.compra_id
-    ''');
+Future<void> carregarValores() async {
+  final db = await DatabaseHelper().database;
 
-    double ganho = 0;
-    double despesa = 0;
+  // Buscar limite de gastos do usuário (supondo que id=1)
+  final usuarioResult = await db.query(
+    'UsuarioLocal',
+    columns: ['limite_gastos'],
+    where: 'id = ?',
+    whereArgs: [1],
+    limit: 1,
+  );
 
-    for (var row in result) {
-      final valor =
-          row['valor'] is int
-              ? (row['valor'] as int).toDouble()
-              : row['valor'] as double;
-      final nome = (row['nome'] as String).toLowerCase();
-
-      if (valor < 0) {
-        despesa += valor.abs();
-      } else {
-        ganho += valor;
-      }
+  double limite = 0;
+  if (usuarioResult.isNotEmpty) {
+    final lim = usuarioResult.first['limite_gastos'];
+    if (lim is int) {
+      limite = lim.toDouble();
+    } else if (lim is double) {
+      limite = lim;
     }
-
-    setState(() {
-      limiteGasto = ganho;
-      totalGasto = despesa;
-      isLoading = false;
-    });
   }
 
+  // Buscar todas as transações para calcular o total gasto
+  final result = await db.rawQuery('SELECT valor FROM Transacao');
+
+  double despesa = 0;
+  for (var row in result) {
+    final valor = row['valor'] is int
+        ? (row['valor'] as int).toDouble()
+        : row['valor'] as double;
+
+    despesa += valor.abs(); // Considera todas como despesas
+  }
+
+  setState(() {
+    limiteGasto = limite;
+    totalGasto = despesa;
+    isLoading = false;
+  });
+}
+Future<void> atualizarLimiteNoBanco(double novoLimite) async {
+  final db = await DatabaseHelper().database;
+
+  await db.update(
+    'UsuarioLocal',
+    {'limite_gastos': novoLimite},
+    where: 'id = ?',
+    whereArgs: [1],  // Assumindo que o usuário tem id = 1
+  );
+  print("LIMITE ATUALIZADO: $novoLimite");
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -217,9 +235,11 @@ class _HomeScreenState extends State<HomeScreen>
                               );
 
                               if (newLimit != null && newLimit != limiteGasto) {
-                                setState(() {
-                                  limiteGasto = newLimit;
-                                });
+                                await atualizarLimiteNoBanco(newLimit); // Persiste o novo limite no banco
+                                      setState(() {
+                                        limiteGasto = newLimit; // Atualiza o estado local
+                                      });
+                                await carregarValores();
                               }
                             },
                             child: Row(
@@ -366,16 +386,13 @@ class _HomeScreenState extends State<HomeScreen>
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder:
-                  (context) =>
-                      const TransactionDetailsScreen(isNewTransaction: true),
+              builder: (context) => const TransactionDetailsScreen(isNewTransaction: true),
             ),
           );
 
           if (result == true) {
-            carregarValores(); // Atualiza os gráficos após uma nova transação
-            transactionController
-                .loadTransactions(); // Notifica StatementScreen
+            await carregarValores(); // Atualiza gráficos e valores depois de inserir
+            transactionController.loadTransactions(); // Atualiza tela de extrato
           }
         },
         backgroundColor: AppColors.backgroundButton,
@@ -383,6 +400,7 @@ class _HomeScreenState extends State<HomeScreen>
         shape: const CircleBorder(),
         child: const Icon(Icons.add),
       ),
+
     );
   }
 }

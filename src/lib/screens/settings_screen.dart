@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:src/database/db.dart'; // ajuste o import conforme seu projeto
 import 'utils.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -12,6 +13,45 @@ class _ProfileScreenState extends State<SettingsScreen> {
   bool isDarkMode = false;
   bool notificationsEnabled = true;
 
+  String nomeUsuario = 'Carregando...';
+  double limiteGastos = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarPerfil();
+  }
+
+  Future<void> _carregarPerfil() async {
+    final db = await DatabaseHelper().database;
+    final List<Map<String, dynamic>> usuarios = await db.query('UsuarioLocal', limit: 1);
+
+    if (usuarios.isNotEmpty) {
+      final usuario = usuarios.first;
+      setState(() {
+        nomeUsuario = usuario['nome'] ?? 'Fulano de Tal';
+        final limiteValue = usuario['limite_gastos'];
+          if (limiteValue != null) {
+            if (limiteValue is int) {
+              limiteGastos = limiteValue.toDouble();
+            } else if (limiteValue is double) {
+              limiteGastos = limiteValue;
+            } else {
+              limiteGastos = 0.0;
+            }
+          } else {
+            limiteGastos = 0.0;
+          }
+
+      });
+    } else {
+      setState(() {
+        nomeUsuario = 'Fulano de Tal';
+        limiteGastos = 0.0;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,22 +63,30 @@ class _ProfileScreenState extends State<SettingsScreen> {
           children: [
             const CircleAvatar(radius: 40, child: Icon(Icons.person, size: 40)),
             const SizedBox(height: 10),
-            const Text(
-              "Fulano De Tal",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              nomeUsuario,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const Text("ID: 00000001", style: TextStyle(color: AppColors.textPrimary)),
+            Text("Limite de Gastos: R\$ ${limiteGastos.toStringAsFixed(2)}",
+                style: const TextStyle(color: AppColors.textPrimary)),
             const SizedBox(height: 20),
             ListTile(
               leading: const Icon(Icons.edit),
               title: const Text("Editar Perfil"),
-              onTap: () {
-                Navigator.push(
+              onTap: () async {
+                final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const EditProfileScreen(),
+                    builder: (context) => EditProfileScreen(
+                      nomeAtual: nomeUsuario,
+                      limiteAtual: limiteGastos,
+                    ),
                   ),
                 );
+
+                if (result == true) {
+                  _carregarPerfil();
+                }
               },
             ),
             SwitchListTile(
@@ -94,8 +142,73 @@ class _ProfileScreenState extends State<SettingsScreen> {
   }
 }
 
-class EditProfileScreen extends StatelessWidget {
-  const EditProfileScreen({super.key});
+// ---------------------------------------------------------------
+
+class EditProfileScreen extends StatefulWidget {
+  final String nomeAtual;
+  final double limiteAtual;
+
+  const EditProfileScreen({
+    super.key,
+    required this.nomeAtual,
+    required this.limiteAtual,
+  });
+
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  late TextEditingController _nomeController;
+  late TextEditingController _limiteController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nomeController = TextEditingController(text: widget.nomeAtual);
+    _limiteController = TextEditingController(text: widget.limiteAtual.toString());
+  }
+
+  @override
+  void dispose() {
+    _nomeController.dispose();
+    _limiteController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _atualizarPerfil() async {
+    final nome = _nomeController.text.trim();
+    final limite = double.tryParse(_limiteController.text.trim());
+
+    if (nome.isEmpty || limite == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Preencha todos os campos corretamente.")),
+      );
+      return;
+    }
+
+    final db = await DatabaseHelper().database;
+
+    final count = await db.update(
+      'UsuarioLocal',
+      {
+        'nome': nome,
+        'limite_gastos': limite,
+      },
+      where: 'id = ?',
+      whereArgs: [1], // ajuste o ID conforme necessário
+    );
+
+    if (count > 0) {
+      debugPrint('Perfil atualizado com sucesso');
+      Navigator.pop(context, true);
+    } else {
+      debugPrint('Erro ao atualizar perfil');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Erro ao atualizar perfil.")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,13 +220,13 @@ class EditProfileScreen extends StatelessWidget {
           children: [
             Utils.buildInputField(
               "Nome",
-              controller: TextEditingController(),
+              controller: _nomeController,
               type: TextInputType.text,
               obscure: false,
             ),
             Utils.buildInputField(
               "Limite de Gastos",
-              controller: TextEditingController(),
+              controller: _limiteController,
               type: TextInputType.number,
               obscure: false,
             ),
@@ -137,9 +250,5 @@ class EditProfileScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _atualizarPerfil() {
-    debugPrint("Atualizando perfil...");
   }
 }

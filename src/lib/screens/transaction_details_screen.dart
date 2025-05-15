@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'utils.dart';  // Certifique-se de que o Utils está correto
-import '../database/db.dart';  // Certifique-se de que o caminho do DB está correto
+import 'utils.dart';  // Ajuste o caminho se necessário
+import '../database/db.dart';  // Ajuste o caminho se necessário
 import 'package:sqflite/sqflite.dart';
 import 'package:intl/intl.dart';
 
@@ -8,7 +8,7 @@ class TransactionDetailsScreen extends StatefulWidget {
   final String? title;
   final double? amount;
   final String? date;
-  final bool? isPositive;
+  final bool? isPositive;  // manteve isPositive
   final bool isNewTransaction;
 
   const TransactionDetailsScreen({
@@ -30,9 +30,6 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
 
-  int? compraId;
-  int? itemId;
-
   @override
   void initState() {
     super.initState();
@@ -41,12 +38,18 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
       _descriptionController.text = widget.title ?? '';
       _amountController.text = widget.amount?.toStringAsFixed(2) ?? '';
       _dateController.text = widget.date ?? '';
-      compraId = widget.isPositive != null ? 1 : 2;
-      itemId = widget.isPositive != null ? 1 : 2;
     } else {
       _dateController.text =
-          DateFormat('dd/MM/yyyy').format(DateTime.now()); // Preenche com data atual
+          DateFormat('dd/MM/yyyy').format(DateTime.now()); // data atual
     }
+  }
+
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    _amountController.dispose();
+    _dateController.dispose();
+    super.dispose();
   }
 
   @override
@@ -62,250 +65,290 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (!widget.isNewTransaction) ...[
-              Text('Descrição: ${widget.title}', style: const TextStyle(fontSize: 18)),
-              Text(
-                'Valor: R\$${widget.amount?.toStringAsFixed(2)}',
-                style: const TextStyle(fontSize: 18),
-              ),
-              Text('Data: ${widget.date}', style: const TextStyle(fontSize: 18)),
-              Text(
-                'Tipo: ${widget.isPositive == true ? 'Receita' : 'Despesa'}',
-                style: const TextStyle(fontSize: 18),
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Utils.buildButton(
-                      text: "Editar",
-                      onPressed: _editarTransacao,
-                    ),
-                    const SizedBox(height: 10),
-                    Utils.buildButton(
-                      text: "Excluir",
-                      onPressed: _excluirTransacao,
-                    ),
-                  ],
-                ),
-              ),
-            ] else ...[
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Utils.buildInputField(
-                      "Descrição",
-                      controller: _descriptionController,
-                      type: TextInputType.text,
-                      obscure: false,
-                      width: 300,
-                    ),
-                    Utils.buildInputField(
-                      "Valor",
-                      controller: _amountController,
-                      type: TextInputType.number,
-                      obscure: false,
-                      width: 300,
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2101),
-                        );
-                        if (pickedDate != null) {
-                          setState(() {
-                            _dateController.text = DateFormat('dd/MM/yyyy').format(pickedDate);
-                          });
-                        }
-                      },
-                      child: AbsorbPointer(
-                        child: Utils.buildInputField(
-                          "Data",
-                          controller: _dateController,
-                          type: TextInputType.datetime,
-                          obscure: false,
-                          width: 300,
-                        ),
-                      ),
-                    ),
-                    Utils.buildButton(
-                      text: "Salvar",
-                      width: 250,
-                      onPressed: _salvarNovaTransacao,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ],
-        ),
+        child: widget.isNewTransaction
+            ? _buildNewTransactionForm()
+            : _buildTransactionDetails(),
       ),
     );
   }
 
+  Widget _buildTransactionDetails() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Descrição: ${widget.title}', style: const TextStyle(fontSize: 18)),
+        Text('Valor: R\$${widget.amount?.toStringAsFixed(2)}',
+            style: const TextStyle(fontSize: 18)),
+        Text('Data: ${widget.date}', style: const TextStyle(fontSize: 18)),
+        Text(
+          'Tipo: ${widget.isPositive == true ? 'Receita' : 'Despesa'}',
+          style: const TextStyle(fontSize: 18),
+        ),
+        const SizedBox(height: 20),
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Utils.buildButton(
+                text: "Editar",
+                onPressed: () {
+                  _showEditDialog();
+                },
+              ),
+              const SizedBox(height: 10),
+              Utils.buildButton(
+                text: "Excluir",
+                onPressed: _excluirTransacao,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNewTransactionForm() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Utils.buildInputField(
+            "Descrição",
+            controller: _descriptionController,
+            type: TextInputType.text,
+            obscure: false,
+            width: 300,
+          ),
+          Utils.buildInputField(
+            "Valor",
+            controller: _amountController,
+            type: TextInputType.number,
+            obscure: false,
+            width: 300,
+          ),
+          GestureDetector(
+            onTap: () async {
+              DateTime? pickedDate = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2101),
+              );
+              if (pickedDate != null) {
+                setState(() {
+                  _dateController.text = DateFormat('dd/MM/yyyy').format(pickedDate);
+                });
+              }
+            },
+            child: AbsorbPointer(
+              child: Utils.buildInputField(
+                "Data",
+                controller: _dateController,
+                type: TextInputType.datetime,
+                obscure: false,
+                width: 300,
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Utils.buildButton(
+            text: "Salvar",
+            width: 250,
+            onPressed: _salvarNovaTransacao,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditDialog() {
+    _descriptionController.text = widget.title ?? '';
+    _amountController.text = widget.amount?.toStringAsFixed(2) ?? '';
+    _dateController.text = widget.date ?? '';
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Editar Transação"),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                Utils.buildInputField(
+                  "Descrição",
+                  controller: _descriptionController,
+                  type: TextInputType.text,
+                  obscure: false,
+                  width: 300,
+                ),
+                Utils.buildInputField(
+                  "Valor",
+                  controller: _amountController,
+                  type: TextInputType.number,
+                  obscure: false,
+                  width: 300,
+                ),
+                GestureDetector(
+                  onTap: () async {
+                    DateTime? pickedDate = await showDatePicker(
+                      context: context,
+                      initialDate: DateFormat('dd/MM/yyyy').parse(_dateController.text),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2101),
+                    );
+                    if (pickedDate != null) {
+                      setState(() {
+                        _dateController.text =
+                            DateFormat('dd/MM/yyyy').format(pickedDate);
+                      });
+                    }
+                  },
+                  child: AbsorbPointer(
+                    child: Utils.buildInputField(
+                      "Data",
+                      controller: _dateController,
+                      type: TextInputType.datetime,
+                      obscure: false,
+                      width: 300,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancelar"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _editarTransacao();
+              },
+              child: const Text("Salvar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _salvarNovaTransacao() async {
-    final description = _descriptionController.text;
-    final amount = double.tryParse(_amountController.text);
-    final date = _dateController.text;
+    final description = _descriptionController.text.trim();
+    final amount = double.tryParse(_amountController.text.trim());
+    final date = _dateController.text.trim();
 
     if (description.isEmpty || amount == null || date.isEmpty) {
-      debugPrint("Preencha todos os campos corretamente.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Preencha todos os campos corretamente.")),
+      );
       return;
     }
 
     final db = await DatabaseHelper().database;
 
-    final compraId = await db.insert(
-      'Compra',
-      {'data': date},
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-
-    final itemId = await db.insert(
-      'Item',
-      {'nome': description, 'valor': amount},
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-
     await db.insert(
-      'Possui',
+      'Transacao',
       {
-        'compra_id': compraId,
-        'item_id': itemId,
+        'nome': description,
+        'valor': amount,
+        'data': date,
+        'usuario_id': 1, // Ajuste conforme seu usuário
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    Navigator.pop(context, true);
 
-    debugPrint("Transação salva com sucesso!");
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Transação salva com sucesso!')),
+      const SnackBar(content: Text('Transação salva com sucesso!')),
     );
+
+    Navigator.pop(context, true);
   }
 
   void _editarTransacao() async {
-    final description = _descriptionController.text;
-    final amount = double.tryParse(_amountController.text);
-    final date = _dateController.text;
+    final description = _descriptionController.text.trim();
+    final amount = double.tryParse(_amountController.text.trim());
+    final date = _dateController.text.trim();
 
     if (description.isEmpty || amount == null || date.isEmpty) {
-      debugPrint("Preencha todos os campos corretamente.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Preencha todos os campos corretamente.")),
+      );
       return;
     }
 
     final db = await DatabaseHelper().database;
 
-    final itemResult = await db.query(
-      'Item',
+    // Busca pelo nome antigo (widget.title) para editar
+    final transacaoResult = await db.query(
+      'Transacao',
       where: 'nome = ?',
-      whereArgs: [description],
+      whereArgs: [widget.title],
     );
 
-    if (itemResult.isEmpty) {
-      debugPrint("Item não encontrado.");
+    if (transacaoResult.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Transação não encontrada.")),
+      );
       return;
     }
 
-    final itemId = itemResult.first['id'];
-
-    final compraResult = await db.query(
-      'Possui',
-      where: 'item_id = ?',
-      whereArgs: [itemId],
-    );
-
-    if (compraResult.isEmpty) {
-      debugPrint("Compra não encontrada.");
-      return;
-    }
-
-    final compraId = compraResult.first['compra_id'];
+    final int transacaoId = transacaoResult.first['id'] as int;
 
     await db.update(
-      'Compra',
-      {'data': date},
+      'Transacao',
+      {
+        'nome': description,
+        'valor': amount,
+        'data': date,
+      },
       where: 'id = ?',
-      whereArgs: [compraId],
+      whereArgs: [transacaoId],
     );
 
-    await db.update(
-      'Item',
-      {'nome': description, 'valor': amount},
-      where: 'id = ?',
-      whereArgs: [itemId],
-    );
-
-    debugPrint("Transação editada com sucesso!");
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Transação editada com sucesso!')),
+      const SnackBar(content: Text('Transação editada com sucesso!')),
     );
+
+    Navigator.pop(context, true);
   }
 
   void _excluirTransacao() async {
-    final description = _descriptionController.text;
+    final description = widget.title ?? '';
 
     if (description.isEmpty) {
-      debugPrint("Descrição não encontrada.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Descrição da transação não informada.")),
+      );
       return;
     }
 
     final db = await DatabaseHelper().database;
 
-    final itemResult = await db.query(
-      'Item',
+    final transacaoResult = await db.query(
+      'Transacao',
       where: 'nome = ?',
       whereArgs: [description],
     );
 
-    if (itemResult.isEmpty) {
-      debugPrint("Item não encontrado.");
+    if (transacaoResult.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Transação não encontrada.")),
+      );
       return;
     }
 
-    final itemId = itemResult.first['id'];
-
-    final compraResult = await db.query(
-      'Possui',
-      where: 'item_id = ?',
-      whereArgs: [itemId],
-    );
-
-    if (compraResult.isEmpty) {
-      debugPrint("Compra não encontrada.");
-      return;
-    }
-
-    final compraId = compraResult.first['compra_id'];
+    final int transacaoId = transacaoResult.first['id'] as int;
 
     await db.delete(
-      'Possui',
-      where: 'compra_id = ?',
-      whereArgs: [compraId],
-    );
-
-    await db.delete(
-      'Item',
+      'Transacao',
       where: 'id = ?',
-      whereArgs: [itemId],
+      whereArgs: [transacaoId],
     );
 
-    await db.delete(
-      'Compra',
-      where: 'id = ?',
-      whereArgs: [compraId],
-    );
-
-    debugPrint("Transação excluída com sucesso!");
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Transação excluída com sucesso!')),
+      const SnackBar(content: Text('Transação excluída com sucesso!')),
     );
 
     Navigator.pop(context, true);

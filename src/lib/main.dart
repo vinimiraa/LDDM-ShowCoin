@@ -11,12 +11,43 @@ final transactionController = TransactionController();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  var db = await DatabaseHelper().database;
-  print('Banco de dados inicializado com sucesso!');
+
   final dbPath = await getDatabasesPath();
+  final fullPath = dbPath + '/app.db';
+
+  // Checa se o arquivo do banco já existe
+  final bool dbExists = await databaseExists(fullPath);
+
+  // Inicializa o banco (cria se não existir)
+  var db = await DatabaseHelper().database;
+
+  print('Banco de dados inicializado com sucesso!');
   print('Caminho do banco de dados: $dbPath');
 
+  if (dbExists) {
+    // Se banco existe, checa se tem usuário
+    await _criarUsuarioPadraoSeNaoExistir(db);
+  } else {
+    // Banco não existia, mas acabou de ser criado pelo DatabaseHelper.onCreate,
+    // então insere o usuário padrão
+    await _criarUsuarioPadraoSeNaoExistir(db);
+  }
+
   runApp(const MyApp());
+}
+
+Future<void> _criarUsuarioPadraoSeNaoExistir(Database db) async {
+  final usuarios = await db.query('UsuarioLocal');
+  if (usuarios.isEmpty) {
+    await db.insert('UsuarioLocal', {
+      'nome': 'Fulano de Tal',
+      'limite_gastos': 0,
+      'foto_de_perfil': null,
+    });
+    debugPrint('Usuário padrão criado.');
+  } else {
+    debugPrint('Usuário já existente.');
+  }
 }
 
 class MyApp extends StatelessWidget {

@@ -9,18 +9,15 @@ class TransactionController extends ChangeNotifier {
   Future<void> loadTransactions() async {
     try {
       final db = await DatabaseHelper().database;
-      final result = await db.rawQuery(''' 
-        SELECT Item.nome AS title, Item.valor AS amount, Compra.data AS date
-        FROM Item
-        INNER JOIN Possui ON Item.id = Possui.item_id
-        INNER JOIN Compra ON Compra.id = Possui.compra_id
-        ORDER BY Compra.data DESC
+      final result = await db.rawQuery('''
+        SELECT nome AS title, valor AS amount, data AS date
+        FROM Transacao
+        ORDER BY data DESC
       ''');
 
       _transactions = result;
       notifyListeners();
     } catch (e) {
-      // Aqui você pode adicionar um tratamento de erro (ex: log, toast, etc)
       print('Erro ao carregar transações: $e');
     }
   }

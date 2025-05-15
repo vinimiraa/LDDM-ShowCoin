@@ -16,7 +16,7 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'compras.db');
+    final path = join(dbPath, 'app.db');
 
     return await openDatabase(
       path,
@@ -27,27 +27,22 @@ class DatabaseHelper {
 
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE Compra (
-        id INTEGER PRIMARY KEY,
-        data TEXT
-      )
-    ''');
-
-    await db.execute('''
-      CREATE TABLE Item (
+      CREATE TABLE UsuarioLocal (
         id INTEGER PRIMARY KEY,
         nome TEXT,
-        valor REAL
+        limite_gastos REAL,
+        foto_de_perfil TEXT
       )
     ''');
 
     await db.execute('''
-      CREATE TABLE Possui (
-        compra_id INTEGER,
-        item_id INTEGER,
-        PRIMARY KEY (compra_id, item_id),
-        FOREIGN KEY (compra_id) REFERENCES Compra(id),
-        FOREIGN KEY (item_id) REFERENCES Item(id)
+      CREATE TABLE Transacao (
+        id INTEGER PRIMARY KEY,
+        data TEXT,
+        nome TEXT,
+        valor REAL,
+        usuario_id INTEGER,
+        FOREIGN KEY (usuario_id) REFERENCES UsuarioLocal(id)
       )
     ''');
   }
