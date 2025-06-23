@@ -2,23 +2,20 @@ import '../models/transaction_model.dart';
 import 'db.dart';
 
 class TransactionDB {
-  static const String table = 'Transacao';
   final DatabaseHelper _dbHelper = DatabaseHelper();
 
   /// Insere uma nova transação
   Future<int> insertTransaction(TransactionModel transaction) async {
     final db = await _dbHelper.database;
-    return await db.insert(table, transaction.toMap());
+    return await db.insert(DatabaseHelper.transactionTable, transaction.toMap());
   }
-
+  
   /// Busca todas as transações de um usuário
-  Future<List<TransactionModel>> getTransactions({required int userId}) async {
+  Future<List<TransactionModel>> getTransactions() async {
     final db = await _dbHelper.database;
     final result = await db.query(
-      table,
-      where: 'usuario_id = ?',
-      whereArgs: [userId],
-      orderBy: 'data DESC',
+      DatabaseHelper.transactionTable,
+      orderBy: 'date DESC',
     );
     return result.map((e) => TransactionModel.fromMap(e)).toList();
   }
@@ -27,7 +24,7 @@ class TransactionDB {
   Future<TransactionModel?> getTransactionById(int id) async {
     final db = await _dbHelper.database;
     final result = await db.query(
-      table,
+      DatabaseHelper.transactionTable,
       where: 'id = ?',
       whereArgs: [id],
       limit: 1,
@@ -42,7 +39,7 @@ class TransactionDB {
   Future<int> updateTransaction(TransactionModel transaction) async {
     final db = await _dbHelper.database;
     return await db.update(
-      table,
+      DatabaseHelper.transactionTable,
       transaction.toMap(),
       where: 'id = ?',
       whereArgs: [transaction.id],
@@ -53,19 +50,9 @@ class TransactionDB {
   Future<int> deleteTransaction(int id) async {
     final db = await _dbHelper.database;
     return await db.delete(
-      table,
+      DatabaseHelper.transactionTable,
       where: 'id = ?',
       whereArgs: [id],
-    );
-  }
-
-  /// Deleta todas as transações de um usuário
-  Future<int> deleteAllTransactionsByUser(int userId) async {
-    final db = await _dbHelper.database;
-    return await db.delete(
-      table,
-      where: 'usuario_id = ?',
-      whereArgs: [userId],
     );
   }
 }

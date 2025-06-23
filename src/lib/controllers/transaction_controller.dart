@@ -10,9 +10,9 @@ class TransactionController extends ChangeNotifier {
     try {
       final db = await DatabaseHelper().database;
       final result = await db.rawQuery('''
-        SELECT nome AS title, valor AS amount, data AS date
-        FROM Transacao
-        ORDER BY data DESC
+        SELECT name, value, date
+        FROM Transaction
+        ORDER BY date DESC
       ''');
 
       _transactions = result;

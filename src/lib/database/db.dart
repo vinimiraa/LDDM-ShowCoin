@@ -10,8 +10,8 @@ class DatabaseHelper {
   static const _dbName = 'app.db';
   static const _dbVersion = 1;
 
-  static const String userTable = 'UsuarioLocal';
-  static const String transactionTable = 'Transacao';
+  static const String userTable = 'User';
+  static const String transactionTable = 'Transaction';
 
   Database? _database;
 
@@ -54,9 +54,9 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE $userTable (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome VARCHAR(255) NOT NULL,
-        limite_gastos REAL NOT NULL DEFAULT 0,
-        foto_de_perfil TEXT
+        name VARCHAR(255) NOT NULL,
+        spending_limit REAL NOT NULL DEFAULT 0,
+        profile_picture_url TEXT
       )
     ''');
   }
@@ -65,11 +65,10 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE $transactionTable (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        data TEXT NOT NULL,
-        nome VARCHAR(255) NOT NULL,
-        valor REAL NOT NULL,
-        usuario_id INTEGER NOT NULL,
-        FOREIGN KEY (usuario_id) REFERENCES UsuarioLocal(id)
+        date DATE NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        value REAL NOT NULL,
+        amount INTEGER NOT NULL DEFAULT 1
       )
     ''');
   }

@@ -5,13 +5,13 @@ class UserDB {
   final DatabaseHelper _dbHelper = DatabaseHelper();
 
   // Insere um novo usuário
-  Future<int> insertUser(LocalUser user) async {
+  Future<int> insertUser(LocalUserModel user) async {
     final db = await _dbHelper.database;
     return await db.insert(DatabaseHelper.userTable, user.toMap());
   }
 
   // Retorna usuário pelo ID
-  Future<LocalUser?> getUserById(int id) async {
+  Future<LocalUserModel?> getUserById(int id) async {
     final db = await _dbHelper.database;
     final result = await db.query(
       DatabaseHelper.userTable,
@@ -21,23 +21,23 @@ class UserDB {
     );
     if (result.isNotEmpty) {
       final map = result.first;
-      return LocalUser.fromMap(map);
+      return LocalUserModel.fromMap(map);
     }
     return null;
   }
 
   /// Retorna o primeiro usuário (se o app só tem um usuário local)
-  Future<LocalUser?> getFirstUser() async {
+  Future<LocalUserModel?> getFirstUser() async {
     final db = await _dbHelper.database;
     final result = await db.query(DatabaseHelper.userTable, limit: 1);
     if (result.isNotEmpty) {
-      return LocalUser.fromMap(result.first);
+      return LocalUserModel.fromMap(result.first);
     }
     return null;
   }
 
   /// Atualiza um usuário
-  Future<int> updateUser(LocalUser user) async {
+  Future<int> updateUser(LocalUserModel user) async {
     final db = await _dbHelper.database;
     return await db.update(
       DatabaseHelper.userTable,

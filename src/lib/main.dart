@@ -1,59 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:src/screens/start_screen.dart';
 import 'package:src/screens/utils.dart';
-import 'package:src/database/db.dart';
+import 'package:src/database/user_db.dart';
+import 'package:src/models/user_model.dart';
 import 'package:sqflite/sqflite.dart';
-import 'controllers/transaction_controller.dart';
-// import 'package:intl/intl.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
-final transactionController = TransactionController();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (!kIsWeb)
-  {
-    final dbPath = await getDatabasesPath();
-    final fullPath = dbPath + '/app.db';
-
-    // Checa se o arquivo do banco já existe
-    final bool dbExists = await databaseExists(fullPath);
-
-    // Inicializa o banco (cria se não existir)
-    var db = await DatabaseHelper().database;
-
-    debugPrint('Banco de dados inicializado com sucesso!');
-    debugPrint('Caminho do banco de dados: $dbPath');
-
-    if (dbExists) {
-      // Se banco existe, checa se tem usuário
-      await _criarUsuarioPadraoSeNaoExistir(db);
-    } else {
-      // Banco não existia, mas acabou de ser criado pelo DatabaseHelper.onCreate,
-      // então insere o usuário padrão
-      await _criarUsuarioPadraoSeNaoExistir(db);
-    }
+  if (!kIsWeb) {
+    await _setupLocalDatabase();
   } else {
-    // Se for web, não usa o banco local
-    debugPrint('Executando em ambiente web, sem banco local.');
+    debugPrint('Executando na web. Banco local não utilizado.');
   }
+
   runApp(const MyApp());
 }
 
-Future<void> _criarUsuarioPadraoSeNaoExistir(Database db) async {
-  final usuarios = await db.query('UsuarioLocal');
-  if (usuarios.isEmpty) {
-    await db.insert('UsuarioLocal', {
-      'nome': 'Fulano de Tal',
-      'limite_gastos': 0,
-      'foto_de_perfil': null,
-    });
-    debugPrint('Usuário padrão criado.');
+Future<void> _setupLocalDatabase() async {
+  final dbPath = await getDatabasesPath();
+  final fullPath = '$dbPath/app.db';
+
+  final bool dbExists = await databaseExists(fullPath);
+
+  debugPrint('Banco de dados inicializado em: $fullPath');
+
+  final userDB = UserDB();
+
+  if (!dbExists) {
+    await _criarUsuarioPadrao(userDB);
   } else {
-    debugPrint('Usuário já existente.');
+    final existingUser = await userDB.getFirstUser();
+    if (existingUser == null) {
+      await _criarUsuarioPadrao(userDB);
+    } else {
+      debugPrint('Usuário local já existente: ${existingUser.name}');
+    }
   }
+}
+
+Future<void> _criarUsuarioPadrao(UserDB userDB) async {
+  final user = LocalUserModel.defaultUser();
+  await userDB.insertUser(user);
+  debugPrint('Usuário padrão criado.');
 }
 
 class MyApp extends StatelessWidget {
@@ -64,7 +56,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Show Coin',
-      navigatorObservers: [routeObserver], // Inscreve o RouteObserver
+      navigatorObservers: [routeObserver],
       theme: ThemeData(
         scaffoldBackgroundColor: AppColors.background,
         fontFamily: 'Inter',
