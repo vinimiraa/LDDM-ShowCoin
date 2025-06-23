@@ -40,6 +40,20 @@ class LocalUserModel {
     );
   }
 
+  LocalUserModel copyWith({
+    int? id,
+    String? name,
+    double? spendingLimit,
+    String? profilePictureUrl,
+  }) {
+    return LocalUserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      spendingLimit: spendingLimit ?? this.spendingLimit,
+      profilePictureUrl: profilePictureUrl ?? this.profilePictureUrl,
+    );
+  }
+
   @override
   String toString() {
     return 'LocalUserModel{id: $id, name: $name, spendingLimit: $spendingLimit, profilePictureUrl: $profilePictureUrl}';

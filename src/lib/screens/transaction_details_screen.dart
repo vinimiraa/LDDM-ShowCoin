@@ -8,7 +8,7 @@ class TransactionDetailsScreen extends StatefulWidget {
   final String? title;
   final double? amount;
   final String? date;
-  final bool? isPositive;  // manteve isPositive
+  final bool? isPositive;
   final bool isNewTransaction;
 
   const TransactionDetailsScreen({

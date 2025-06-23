@@ -2,11 +2,11 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:src/screens/utils.dart';
 
-class PieChartGanhoDespesa extends StatefulWidget {
+class PieChartGastos extends StatefulWidget {
   final double limiteGasto;
   final double totalGasto;
 
-  const PieChartGanhoDespesa({
+  const PieChartGastos({
     super.key,
     required this.limiteGasto,
     required this.totalGasto,
@@ -16,7 +16,7 @@ class PieChartGanhoDespesa extends StatefulWidget {
   State<StatefulWidget> createState() => PieChartGanhoDespesaState();
 }
 
-class PieChartGanhoDespesaState extends State<PieChartGanhoDespesa> {
+class PieChartGanhoDespesaState extends State<PieChartGastos> {
   int touchedIndex = -1;
 
   @override
@@ -77,13 +77,13 @@ class PieChartGanhoDespesaState extends State<PieChartGanhoDespesa> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: const [
               Indicator(
-                color: GAppColors.contentColorGreen,
+                color: GraphicColors.contentColorGreen,
                 text: 'Limite Restante',
                 isSquare: true,
               ),
               SizedBox(width: 20),
               Indicator(
-                color: GAppColors.contentColorRed,
+                color: GraphicColors.contentColorRed,
                 text: 'Despesas',
                 isSquare: true,
               ),
@@ -119,26 +119,26 @@ class PieChartGanhoDespesaState extends State<PieChartGanhoDespesa> {
 
     return [
       PieChartSectionData(
-        color: GAppColors.contentColorGreen,
+        color: GraphicColors.contentColorGreen,
         value: limitePercent,
         title: '${limitePercent.toStringAsFixed(1)}%',
         radius: limiteRadius,
         titleStyle: TextStyle(
           fontSize: limiteFontSize,
           fontWeight: FontWeight.bold,
-          color: GAppColors.mainTextColor1,
+          color: GraphicColors.mainTextColor1,
           shadows: shadows,
         ),
       ),
       PieChartSectionData(
-        color: GAppColors.contentColorRed,
+        color: GraphicColors.contentColorRed,
         value: despesaPercent,
         title: '${despesaPercent.toStringAsFixed(1)}%',
         radius: despesaRadius,
         titleStyle: TextStyle(
           fontSize: despesaFontSize,
           fontWeight: FontWeight.bold,
-          color: GAppColors.mainTextColor1,
+          color: GraphicColors.mainTextColor1,
           shadows: shadows,
         ),
       ),
@@ -187,7 +187,7 @@ class Indicator extends StatelessWidget {
   }
 }
 
-class GAppColors {
+class GraphicColors {
   static const Color primary = contentColorCyan;
   static const Color menuBackground = Color(0xFF090912);
   static const Color itemsBackground = Color(0xFF1B2339);
