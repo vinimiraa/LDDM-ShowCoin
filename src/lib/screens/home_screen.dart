@@ -92,7 +92,7 @@ Future<void> atualizarLimiteNoBanco(double novoLimite) async {
     where: 'id = ?',
     whereArgs: [1],  // Assumindo que o usuário tem id = 1
   );
-  print("LIMITE ATUALIZADO: $novoLimite");
+  debugPrint("LIMITE ATUALIZADO: $novoLimite");
 }
   @override
   Widget build(BuildContext context) {

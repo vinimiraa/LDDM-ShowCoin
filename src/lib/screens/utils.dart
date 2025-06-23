@@ -22,11 +22,8 @@ class AppColors {
 }
 
 class Utils {
-  /**
-   *  Cria um AppBar com o título passado por parâmetro
-   *
-   *  @param title - Título do AppBar
-   */
+  // Cria um AppBar com o título passado por parâmetro
+  // @param title - Título do AppBar
   static AppBar buildHeader(String title,) {
     return AppBar(
       backgroundColor: AppColors.header,
@@ -38,11 +35,8 @@ class Utils {
     );
   } // buildHeader
 
-  /**
-   *  Cria um rodapé com informações de direitos autorais
-   *
-   *  @returns - Widget do rodapé
-   */
+  //  Cria um rodapé com informações de direitos autorais
+  //  @returns - Widget do rodapé
   static Widget buildFooter( )
   {
     return BottomAppBar(
@@ -66,21 +60,13 @@ class Utils {
     );
   } // buildFooter
 
-  /**
-   *  Cria um botão com o texto e a função passados por parâmetro
-   *
-   *  @param text - Texto do botão
-   *
-   *  @param onPressed - Função a ser executada ao clicar no botão
-   *
-   *  @param color - Cor do botão
-   *
-   *  @param onhouver - Cor do botão ao passar o mouse por cima
-   *
-   *  @param width - Largura do botão
-   *
-   *  @param height - Altura do botão
-   */
+  //  Cria um botão com o texto e a função passados por parâmetro
+  //  @param text - Texto do botão
+  //  @param onPressed - Função a ser executada ao clicar no botão
+  //  @param color - Cor do botão
+  //  @param onhouver - Cor do botão ao passar o mouse por cima
+  //  @param width - Largura do botão
+  //  @param height - Altura do botão
   static Widget buildButton({
     required String text,
     required VoidCallback onPressed,
@@ -162,18 +148,12 @@ class Utils {
     );
   } // buildText
 
-  /**
-   *  Cria um campo de texto com o label, o controller, o tipo e a visibilidade
-   *  passados por parâmetro
-   *
-   *  @param label - O texto que aparecerá como rótulo no campo
-   *
-   *  @param controller - Gerencia o estado do texto digitado.
-   *
-   *  @param type - Define o tipo de teclado (ex: numérico, texto, email).
-   *
-   *  @param obscure - Indica se o texto será ocultado (exemplo: senha).
-   */
+  // Cria um campo de texto com o label, o controller, o tipo e a visibilidade
+  // passados por parâmetro
+  // @param label - O texto que aparecerá como rótulo no campo
+  // @param controller - Gerencia o estado do texto digitado.
+  // @param type - Define o tipo de teclado (ex: numérico, texto, email).
+  // @param obscure - Indica se o texto será ocultado (exemplo: senha).
   static Widget buildInputField(
     String label, {
     required TextEditingController controller,
@@ -192,26 +172,16 @@ class Utils {
     );
   } // buildInputField
 
-  /**
-   *  Exibe um diálogo de alerta com o título, o conteúdo e as funções de
-   *  confirmação e cancelamento passados por parâmetro
-   *
-   *  @param context - Contexto da aplicação
-   *
-   *  @param title - Título do diálogo
-   *
-   *  @param content - Conteúdo/Descrição do diálogo
-   *
-   *  @param onConfirm - Função a ser executada ao confirmar
-   *
-   *  @param confirmText - Texto do botão de confirmação
-   *
-   *  @param cancelText - Texto do botão de cancelamento
-   *
-   *  @param confirmButtonColor - Cor do botão de confirmação
-   *
-   *  @param cancelButtonColor - Cor do botão de cancelamento
-   */
+  // Exibe um diálogo de alerta com o título, o conteúdo e as funções de
+  // confirmação e cancelamento passados por parâmetro
+  // @param context - Contexto da aplicação
+  // @param title - Título do diálogo
+  // @param content - Conteúdo/Descrição do diálogo
+  // @param onConfirm - Função a ser executada ao confirmar
+  // @param confirmText - Texto do botão de confirmação
+  // @param cancelText - Texto do botão de cancelamento
+  // @param confirmButtonColor - Cor do botão de confirmação
+  // @param cancelButtonColor - Cor do botão de cancelamento
   static void showAlertDialog(
     BuildContext context,
     String title,

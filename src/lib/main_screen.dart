@@ -24,7 +24,7 @@ class _MainScreenState extends State<MainScreen> {
   final Color _inactiveColorButton = AppColors.inativeNavBarButton;
 
   late List<Widget> _screens;
-  int _previousIndex = 0;
+  // int _previousIndex = 0;
 
   @override
   void initState() {

@@ -18,7 +18,7 @@ class TransactionController extends ChangeNotifier {
       _transactions = result;
       notifyListeners();
     } catch (e) {
-      print('Erro ao carregar transações: $e');
+      debugPrint('Erro ao carregar transações: $e');
     }
   }
 }
