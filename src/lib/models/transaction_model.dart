@@ -33,6 +33,22 @@ class TransactionModel {
     );
   }
 
+  TransactionModel copyWith({
+    String? id,
+    String? name,
+    double? value,
+    int? amount,
+    String? date,
+  }) {
+    return TransactionModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      value: value ?? this.value,
+      amount: amount ?? this.amount,
+      date: date ?? this.date,
+    );
+  }
+
   @override
   String toString() {
     return 'TransactionModel(id: $id, name: $name, value: $value, date: $date)';
