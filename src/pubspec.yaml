@@ -44,6 +44,8 @@ dependencies:
   http: ^1.4.0
   html: ^0.15.6
   mobile_scanner: ^7.0.0
+  csv: ^6.0.0
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:

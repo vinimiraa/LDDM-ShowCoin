@@ -4,21 +4,22 @@ import '../models/transaction_model.dart';
 import 'transaction_details_screen.dart';
 import 'utils.dart';
 
-class StatementScreen extends StatefulWidget {
-  const StatementScreen({super.key});
+class TransactionScreen extends StatefulWidget {
+  const TransactionScreen({super.key});
 
   @override
-  State<StatementScreen> createState() => _StatementScreenState();
+  State<TransactionScreen> createState() => _TransactionScreenState();
 }
 
-class _StatementScreenState extends State<StatementScreen> {
+class _TransactionScreenState extends State<TransactionScreen> {
   List<TransactionModel> _transactions = [];
 
   void _onTransactionsChanged() {
     setState(() {
-      _transactions = transactionController.transactions
-          .map((map) => TransactionModel.fromMap(map))
-          .toList();
+      _transactions =
+          transactionController.transactions
+              .map((map) => TransactionModel.fromMap(map))
+              .toList();
     });
   }
 
@@ -39,27 +40,30 @@ class _StatementScreenState extends State<StatementScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Utils.buildHeader('Extrato'),
-      body: _transactions.isEmpty
-          ? const Center(
-              child: Text(
-                'Nenhuma transação registrada.',
-                style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
+      body:
+          _transactions.isEmpty
+              ? const Center(
+                child: Text(
+                  'Nenhuma transação registrada.',
+                  style: TextStyle(fontSize: 16, color: AppColors.textPrimary),
+                ),
+              )
+              : ListView.builder(
+                padding: const EdgeInsets.all(16.0),
+                itemCount: _transactions.length,
+                itemBuilder: (context, index) {
+                  final t = _transactions[index];
+                  return _buildTransactionItem(t);
+                },
               ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16.0),
-              itemCount: _transactions.length,
-              itemBuilder: (context, index) {
-                final t = _transactions[index];
-                return _buildTransactionItem(t);
-              },
-            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const TransactionDetailsScreen(isNewTransaction: true),
+              builder:
+                  (context) =>
+                      const TransactionDetailsScreen(isNewTransaction: true),
             ),
           );
 
@@ -76,49 +80,44 @@ class _StatementScreenState extends State<StatementScreen> {
   }
 
   Widget _buildTransactionItem(TransactionModel t) {
-    final isPositive = t.value >= 0;
-    final icon = isPositive ? Icons.attach_money : Icons.shopping_cart;
-    final color = isPositive
-        ? AppColors.contentColorGreen
-        : AppColors.contentColorRed;
+    return TextButton(
+      onPressed: () async {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (context) => TransactionDetailsScreen(
+                  transaction: t,
+                  isNewTransaction: false,
+                ),
+          ),
+        );
 
-    return Card(
-      color: AppColors.backgroundNavBar,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        if (result == true) {
+          await transactionController.loadTransactions();
+        }
+      },
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Icon(icon, size: 40, color: color),
+        leading: const Icon(Icons.shopping_cart, size: 40, color: Colors.amber),
         title: Text(
           t.name,
-          style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
+          ),
         ),
         subtitle: Text(
           t.date,
           style: const TextStyle(color: AppColors.textSecondary),
         ),
         trailing: Text(
-          "${isPositive ? '' : '-'} R\$${t.value.toStringAsFixed(2)}",
-          style: TextStyle(
+          "- R\$${t.value.toStringAsFixed(2)}",
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: color,
+            color: Color.fromRGBO(244, 67, 54, 1), // Vermelho antigo
           ),
         ),
-        onTap: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => TransactionDetailsScreen(
-                transaction: t,
-                isNewTransaction: false,
-              ),
-            ),
-          );
-
-          if (result == true) {
-            await transactionController.loadTransactions();
-          }
-        },
       ),
     );
   }

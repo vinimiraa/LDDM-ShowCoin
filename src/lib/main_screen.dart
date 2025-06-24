@@ -34,13 +34,9 @@ class _MainScreenState extends State<MainScreen> {
 
   List<Widget> _buildScreens() {
     return [
-      HomeScreen(
-        controller: _controller,
-      ),
-      StatementScreen(),
-      QRCodeScreen(
-        controller: _controller,
-      ),
+      HomeScreen(controller: _controller),
+      TransactionScreen(),
+      QRCodeScreen(controller: _controller),
       SettingsScreen(),
     ];
   }
