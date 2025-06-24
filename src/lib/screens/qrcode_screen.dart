@@ -1,8 +1,11 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+import 'package:src/database/transaction_db.dart';
+import 'package:src/models/transaction_model.dart';
 import 'utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
@@ -16,8 +19,7 @@ class QRCodeScreen extends StatefulWidget {
   State<QRCodeScreen> createState() => _QRCodeScreenState();
 }
 
-class _QRCodeScreenState extends State<QRCodeScreen>
-    with WidgetsBindingObserver {
+class _QRCodeScreenState extends State<QRCodeScreen> with WidgetsBindingObserver {
   final MobileScannerController _scannerController = MobileScannerController();
 
   @override
@@ -63,41 +65,58 @@ class _QRCodeScreenState extends State<QRCodeScreen>
 
 Future<void> getQRCodeInformation(String url) async {
   if (url.isEmpty) {
-    debugPrint("Empty URL!");
+    debugPrint("Erro: URL do QR Code está vazia.");
     return;
   }
-  // debugPrint("URL: $url");
 
   var html = (await http.get(Uri.parse(url))).body;
-  // debugPrint("HTML: $html");
 
-  var list = parseHtml(html);
-  // debugPrint("Lista: $list");
+  var transactionsList = parseHtml(html);
 
-  for (var item in list) {
-		// TODO: Adicionar lógica para salvar os dados no banco de dados
-    debugPrint(item); // Print para debug
+  final transactionDB = TransactionDB();
+  for (var item in transactionsList) {
+    transactionDB.insertTransaction(item);
   }
 }
 
-List parseHtml(String html) {
+List<TransactionModel> parseHtml(String html) {
   final document = parse(html);
   final table = document.querySelector("#myTable");
+  final dateStr = document.querySelectorAll('#accordion table')[5].querySelector("tbody td:nth-child(4)")?.text.trim() ?? "";
 
-  List<String> items = [];
-  var rows = table?.querySelectorAll("tr");
-  for (var row in rows!) {
-    var cells = row.querySelectorAll("td");
-    if (cells.isNotEmpty) {
-      var title = cells[0].querySelector("h7")?.text.trim() ?? "";
-      var quantity = cells[1].text.trim();
-      var value = cells[3].text.trim();
-
-      var item = "$title - $quantity - $value";
-
-      items.add(item);
+  // Conversão para ISO 8601
+  String dateIso = "";
+  if (dateStr.isNotEmpty) {
+    try {
+      final inputFormat = DateFormat("dd/MM/yyyy HH:mm:ss");
+      final dateTime = inputFormat.parse(dateStr);
+      dateIso = dateTime.toIso8601String();
+    } catch (e) {
+      dateIso = "";
     }
   }
 
-  return items;
+  List<TransactionModel> transactions = [];
+  var rows = table?.querySelectorAll("tr");
+  for (var row in rows ?? []) {
+    var cells = row.querySelectorAll("td");
+    if (cells.isNotEmpty) {
+      var name = cells[0].querySelector("h7")?.text.trim() ?? "";
+      var amountStr = cells[1].text.trim();
+      var valueStr = cells[3].text.trim();
+
+      // Parse amount and value to appropriate types
+      int? amount = int.tryParse(amountStr.replaceAll(RegExp(r'[^0-9]'), ''));
+      double? value = double.tryParse(valueStr.replaceAll(RegExp(r'[^0-9.,]'), '').replaceAll(',', '.'));
+
+      transactions.add(TransactionModel(
+        name: name,
+        amount: amount ?? 1,
+        value: value ?? 0.0,
+        date: dateIso.isNotEmpty ? dateIso : DateTime.now().toIso8601String(),
+      ));
+    }
+  }
+
+  return transactions;
 }
