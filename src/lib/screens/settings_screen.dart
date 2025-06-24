@@ -24,13 +24,13 @@ class _ProfileScreenState extends State<SettingsScreen> {
 
   Future<void> _carregarPerfil() async {
     final db = await DatabaseHelper().database;
-    final List<Map<String, dynamic>> usuarios = await db.query('UsuarioLocal', limit: 1);
+    final List<Map<String, dynamic>> usuarios = await db.query(DatabaseHelper.userTable, limit: 1);
 
     if (usuarios.isNotEmpty) {
       final usuario = usuarios.first;
       setState(() {
-        nomeUsuario = usuario['nome'] ?? 'Fulano de Tal';
-        final limiteValue = usuario['limite_gastos'];
+        nomeUsuario = usuario['name'] ?? 'Fulano de Tal';
+        final limiteValue = usuario['spending_limit'];
           if (limiteValue != null) {
             if (limiteValue is int) {
               limiteGastos = limiteValue.toDouble();
@@ -190,10 +190,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final db = await DatabaseHelper().database;
 
     final count = await db.update(
-      'UsuarioLocal',
+      DatabaseHelper.userTable,
       {
-        'nome': nome,
-        'limite_gastos': limite,
+        'name': nome,
+        'spending_limit': limite,
       },
       where: 'id = ?',
       whereArgs: [1], // ajuste o ID conforme necessário

@@ -11,7 +11,7 @@ class DatabaseHelper {
   static const _dbVersion = 1;
 
   static const String userTable = 'User';
-  static const String transactionTable = 'Transaction';
+  static const String transactionTable = 'Transactions';
 
   Database? _database;
 
@@ -65,9 +65,9 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE $transactionTable (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        date DATE NOT NULL,
         name VARCHAR(255) NOT NULL,
         value REAL NOT NULL,
+        date DATE NOT NULL,
         amount INTEGER NOT NULL DEFAULT 1
       )
     ''');

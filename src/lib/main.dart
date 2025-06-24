@@ -5,6 +5,7 @@ import 'package:src/screens/utils.dart';
 import 'package:src/database/user_db.dart';
 import 'package:src/models/user_model.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:src/database/db.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
@@ -12,6 +13,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   if (!kIsWeb) {
+    // Apague o banco antigo para forçar a recriação
+    await DatabaseHelper().deleteDatabaseFile();
     await _setupLocalDatabase();
   } else {
     debugPrint('Executando na web. Banco local não utilizado.');
@@ -25,7 +28,6 @@ Future<void> _setupLocalDatabase() async {
   final fullPath = '$dbPath/app.db';
 
   final bool dbExists = await databaseExists(fullPath);
-
   debugPrint('Banco de dados inicializado em: $fullPath');
 
   final userDB = UserDB();
