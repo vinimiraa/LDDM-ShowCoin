@@ -4,7 +4,7 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import '../database/user_db.dart';
 import '../main.dart';
 import '../screens/graphic_test.dart';
-import '../screens/transaction_details_screen.dart';
+import 'transaction_details_screen.dart';
 import '../screens/utils.dart';
 import '../controllers/transaction_controller.dart';
 

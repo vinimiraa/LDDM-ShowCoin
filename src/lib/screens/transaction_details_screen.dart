@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../database/transaction_db.dart';
 import '../models/transaction_model.dart';
 import 'utils.dart';
+import 'dart:core';
 
 class TransactionDetailsScreen extends StatefulWidget {
   final TransactionModel? transaction;
@@ -204,7 +205,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
   Future<void> _deleteTransaction() async {
     if (widget.transaction == null) return;
 
-    await _transactionDB.deleteTransaction(widget.transaction!.id! as int);
+    await _transactionDB.deleteTransaction(widget.transaction!.id!);
 
     _showSuccess('Transação excluída com sucesso!');
     Navigator.pop(context, true);

@@ -53,8 +53,12 @@ class _QRCodeScreenState extends State<QRCodeScreen> with WidgetsBindingObserver
         children: [
           MobileScanner(
             controller: _scannerController,
-            onDetect: (result) {
-              getQRCodeInformation(result.barcodes.first.rawValue!);
+            onDetect: (result) async {
+              final qrValue = result.barcodes.first.rawValue!;
+              debugPrint('QR Code lido: ' + qrValue);
+              await getQRCodeInformation(qrValue);
+              // Redireciona para a aba de transações (aba 2)
+              widget.controller.index = 2;
             },
           ),
         ],
