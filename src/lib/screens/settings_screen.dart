@@ -22,7 +22,7 @@ class _ProfileScreenState extends State<SettingsScreen> {
   bool isDarkMode = false;
   bool notificationsEnabled = true;
 
-  String nomeUsuario = 'Carregando...';
+  String nomeUsuario = 'Usuário';
   double limiteGastos = 0;
 
   @override
@@ -33,43 +33,70 @@ class _ProfileScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _carregarPreferencias() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      notificationsEnabled = prefs.getBool('notificationsEnabled') ?? true;
-    });
+    debugPrint("Carregando preferências do usuário...");
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      setState(() {
+        notificationsEnabled = prefs.getBool('notificationsEnabled') ?? true;
+      });
+    } catch (e, s) {
+      debugPrint("Erro ao carregar preferências: $e\n$s");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Erro ao carregar preferências.")),
+      );
+    }
   }
 
   Future<void> _salvarPreferencias() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('notificationsEnabled', notificationsEnabled);
+    debugPrint("Salvando preferências do usuário...");
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('notificationsEnabled', notificationsEnabled);
+    } catch (e, s) {
+      debugPrint("Erro ao salvar preferências: $e\n$s");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Erro ao salvar preferências.")),
+      );
+    }
   }
 
   Future<void> _carregarPerfil() async {
-    final db = await DatabaseHelper().database;
-    final List<Map<String, dynamic>> usuarios = await db.query(DatabaseHelper.userTable, limit: 1);
+    debugPrint("Carregando perfil do usuário...");
+    try {
+      final db = await DatabaseHelper().database;
+      final List<Map<String, dynamic>> usuarios = await db.query(
+        DatabaseHelper.userTable,
+        limit: 1,
+      );
 
-    if (usuarios.isNotEmpty) {
-      final usuario = usuarios.first;
-      setState(() {
-        nomeUsuario = usuario['name'] ?? 'Fulano de Tal';
-        final limiteValue = usuario['spending_limit'];
-        if (limiteValue != null) {
-          if (limiteValue is int) {
-            limiteGastos = limiteValue.toDouble();
-          } else if (limiteValue is double) {
-            limiteGastos = limiteValue;
+      if (usuarios.isNotEmpty) {
+        final usuario = usuarios.first;
+        setState(() {
+          nomeUsuario = usuario['name'] ?? 'Fulano de Tal';
+          final limiteValue = usuario['spending_limit'];
+          if (limiteValue != null) {
+            if (limiteValue is int) {
+              limiteGastos = limiteValue.toDouble();
+            } else if (limiteValue is double) {
+              limiteGastos = limiteValue;
+            } else {
+              limiteGastos = 0.0;
+            }
           } else {
             limiteGastos = 0.0;
           }
-        } else {
+        });
+      } else {
+        setState(() {
+          nomeUsuario = 'Fulano de Tal';
           limiteGastos = 0.0;
-        }
-      });
-    } else {
-      setState(() {
-        nomeUsuario = 'Fulano de Tal';
-        limiteGastos = 0.0;
-      });
+        });
+      }
+    } catch (e, s) {
+      debugPrint("Erro ao carregar perfil: $e\n$s");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Erro ao carregar perfil do usuário.")),
+      );
     }
   }
 
@@ -120,7 +147,9 @@ class _ProfileScreenState extends State<SettingsScreen> {
               onChanged: (bool value) {
                 setState(() {
                   notificationsEnabled = value;
-                  debugPrint("Notificações ${value ? "ativadas" : "desativadas"}");
+                  debugPrint(
+                    "Notificações ${value ? "ativadas" : "desativadas"}",
+                  );
                 });
                 _salvarPreferencias();
               },
@@ -153,93 +182,107 @@ class _ProfileScreenState extends State<SettingsScreen> {
   }
 
   void _importarCSV() async {
-    // Solicita permissão de armazenamento
-    var status = await Permission.storage.request();
-    if (!status.isGranted) {
+    debugPrint("Importando CSV...");
+    try {
+      var status = await Permission.storage.request();
+      if (!status.isGranted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Permissão de armazenamento negada.")),
+        );
+        return;
+      }
+
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['csv'],
+      );
+
+      if (result == null || result.files.single.path == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Nenhum arquivo selecionado.")),
+        );
+        return;
+      }
+
+      final file = File(result.files.single.path!);
+      final csvString = await file.readAsString();
+      final csvRows = const CsvToListConverter().convert(csvString, eol: '\n');
+
+      int imported = 0;
+      for (int i = 1; i < csvRows.length; i++) {
+        final row = csvRows[i];
+        if (row.length < 5) continue;
+        final transaction = TransactionModel(
+          id: row[0]?.toString(),
+          name: row[1]?.toString() ?? '',
+          value: double.tryParse(row[2].toString()) ?? 0.0,
+          amount: int.tryParse(row[3].toString()) ?? 1,
+          date: row[4]?.toString() ?? '',
+        );
+        try {
+          await TransactionDB().insertTransaction(transaction);
+          imported++;
+        } catch (e) {
+          debugPrint("Erro ao importar transação: $e");
+        }
+      }
+
+      await transactionController.loadTransactions();
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Permissão de armazenamento negada.")),
+        SnackBar(content: Text("$imported transações importadas!")),
       );
-      return;
+    } catch (e, s) {
+      debugPrint("Erro ao importar CSV: $e\n$s");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Erro ao importar CSV.")));
     }
-
-    // Abre o seletor de arquivos
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['csv'],
-    );
-
-    if (result == null || result.files.single.path == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Nenhum arquivo selecionado.")),
-      );
-      return;
-    }
-
-    final file = File(result.files.single.path!);
-    final csvString = await file.readAsString();
-    final csvRows = const CsvToListConverter().convert(csvString, eol: '\n');
-
-    int imported = 0;
-    for (int i = 1; i < csvRows.length; i++) {
-      final row = csvRows[i];
-      if (row.length < 5) continue;
-      final transaction = TransactionModel(
-        id: row[0]?.toString(),
-        name: row[1]?.toString() ?? '',
-        value: double.tryParse(row[2].toString()) ?? 0.0,
-        amount: int.tryParse(row[3].toString()) ?? 1,
-        date: row[4]?.toString() ?? '',
-      );
-      await TransactionDB().insertTransaction(transaction);
-      imported++;
-    }
-
-    // Atualiza a tela de transações em tempo real
-    await transactionController.loadTransactions();
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text("$imported transações importadas!")));
   }
 
   void _exportarCSV() async {
-    // Solicita permissão de armazenamento
-    var status = await Permission.storage.request();
-    if (!status.isGranted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Permissão de armazenamento negada.")),
-      );
-      return;
+    debugPrint("Exportando CSV...");
+    try {
+      var status = await Permission.storage.request();
+      if (!status.isGranted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Permissão de armazenamento negada.")),
+        );
+        return;
+      }
+
+      final csvPath = await TransactionDB().exportToCSV();
+
+      Directory? downloadsDir;
+      if (Platform.isAndroid) {
+        downloadsDir = Directory('/storage/emulated/0/Download');
+      } else {
+        downloadsDir = await getDownloadsDirectory();
+      }
+
+      if (downloadsDir == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Não foi possível acessar a pasta Downloads."),
+          ),
+        );
+        return;
+      }
+
+      final fileName = 'transacoes.csv';
+      final newPath = '${downloadsDir.path}/$fileName';
+      final file = File(csvPath);
+      await file.copy(newPath);
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("CSV exportado para $newPath")));
+    } catch (e, s) {
+      debugPrint("Erro ao exportar CSV: $e\n$s");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Erro ao exportar CSV.")));
     }
-
-    // Gera o CSV
-    final csvPath = await TransactionDB().exportToCSV();
-
-    // Move para a pasta Downloads
-    Directory? downloadsDir;
-    if (Platform.isAndroid) {
-      downloadsDir = Directory('/storage/emulated/0/Download');
-    } else {
-      downloadsDir = await getDownloadsDirectory();
-    }
-
-    if (downloadsDir == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Não foi possível acessar a pasta Downloads."),
-        ),
-      );
-      return;
-    }
-
-    final fileName = 'transacoes.csv';
-    final newPath = '${downloadsDir.path}/$fileName';
-    final file = File(csvPath);
-    await file.copy(newPath);
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text("CSV exportado para $newPath")));
   }
 }
 
@@ -267,7 +310,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void initState() {
     super.initState();
     _nomeController = TextEditingController(text: widget.nomeAtual);
-    _limiteController = TextEditingController(text: widget.limiteAtual.toString());
+    _limiteController = TextEditingController(
+      text: widget.limiteAtual.toString(),
+    );
   }
 
   @override
@@ -278,33 +323,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _atualizarPerfil() async {
+    debugPrint('Atualizando perfil...');
     final nome = _nomeController.text.trim();
-    final limite = double.tryParse(_limiteController.text.trim());
+    final limiteStr = _limiteController.text.trim().replaceAll(',', '.');
+    final limite = double.tryParse(limiteStr);
 
-    if (nome.isEmpty || limite == null) {
+    if (nome.isEmpty || limite == null || limite < 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Preencha todos os campos corretamente.")),
       );
       return;
     }
-
-    final db = await DatabaseHelper().database;
-
-    final count = await db.update(
-      DatabaseHelper.userTable,
-      {
-        'name': nome,
-        'spending_limit': limite,
-      },
-      where: 'id = ?',
-      whereArgs: [1], // ajuste o ID conforme necessário
-    );
-
-    if (count > 0) {
-      debugPrint('Perfil atualizado com sucesso');
-      Navigator.pop(context, true);
-    } else {
-      debugPrint('Erro ao atualizar perfil');
+    try {
+      final db = await DatabaseHelper().database;
+      final count = await db.update(
+        DatabaseHelper.userTable,
+        {'name': nome, 'spending_limit': limite},
+        where: 'id = ?',
+        whereArgs: [1],
+      );
+      if (count > 0) {
+        debugPrint('Perfil atualizado com sucesso');
+        Navigator.pop(context, true);
+      } else {
+        debugPrint('Erro ao atualizar perfil');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Erro ao atualizar perfil.")),
+        );
+      }
+    } catch (e, s) {
+      debugPrint("Erro ao atualizar perfil: $e\n$s");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Erro ao atualizar perfil.")),
       );

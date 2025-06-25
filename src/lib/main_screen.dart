@@ -30,17 +30,39 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    _screens = _buildScreens();
+    try {
+      _screens = _buildScreens();
+    } catch (e, s) {
+      debugPrint('Erro ao construir telas principais: $e\n$s');
+      _screens = [
+        Scaffold(
+          body: Center(
+            child: Text('Erro ao carregar telas. Reinicie o app.'),
+          ),
+        ),
+      ];
+    }
   }
 
   List<Widget> _buildScreens() {
-    return [
-      HomeScreen(controller: _controller),
-      TransactionScreen(),
-      QRCodeScreen(controller: _controller),
-      SettingsScreen(),
-      const CurrencyConverterScreen(),
-    ];
+    try {
+      return [
+        HomeScreen(controller: _controller),
+        TransactionScreen(),
+        QRCodeScreen(controller: _controller),
+        const CurrencyConverterScreen(),
+        SettingsScreen(),
+      ];
+    } catch (e, s) {
+      debugPrint('Erro ao instanciar telas: $e\n$s');
+      return [
+        Scaffold(
+          body: Center(
+            child: Text('Erro ao carregar telas. Reinicie o app.'),
+          ),
+        ),
+      ];
+    }
   }
 
   List<PersistentBottomNavBarItem> _navBarsItems() {
@@ -64,14 +86,14 @@ class _MainScreenState extends State<MainScreen> {
         inactiveColorPrimary: _inactiveColorButton,
       ),
       PersistentBottomNavBarItem(
-        icon: const Icon(Icons.settings),
-        title: "Configurações",
+        icon: const Icon(Icons.currency_exchange),
+        title: "Conversor",
         activeColorPrimary: _activeColorButton,
         inactiveColorPrimary: _inactiveColorButton,
       ),
       PersistentBottomNavBarItem(
-        icon: const Icon(Icons.currency_exchange),
-        title: "Conversor",
+        icon: const Icon(Icons.settings),
+        title: "Configurações",
         activeColorPrimary: _activeColorButton,
         inactiveColorPrimary: _inactiveColorButton,
       ),

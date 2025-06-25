@@ -51,28 +51,48 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
 
   Future<void> carregarValores() async {
     setState(() => isLoading = true);
-
-    final user = await userDB.getFirstUser();
-    final transactions = transactionController.transactions;
-
-    double total = 0;
-    for (var t in transactions) {
-      total += (t['value'] as num).abs();
+    try {
+      final user = await userDB.getFirstUser();
+      final transactions = transactionController.transactions;
+      double total = 0;
+      for (var t in transactions) {
+        try {
+          total += (t['value'] as num).abs();
+        } catch (e) {
+          debugPrint('Erro ao processar transação: $e | $t');
+        }
+      }
+      setState(() {
+        limiteGasto = user?.spendingLimit ?? 0;
+        totalGasto = total;
+        isLoading = false;
+      });
+    } catch (e, s) {
+      debugPrint('Erro ao carregar valores: $e\n$s');
+      setState(() => isLoading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Erro ao carregar dados.')),
+        );
+      }
     }
-
-    setState(() {
-      limiteGasto = user?.spendingLimit ?? 0;
-      totalGasto = total;
-      isLoading = false;
-    });
   }
 
   Future<void> atualizarLimite(double novoLimite) async {
-    final user = await userDB.getFirstUser();
-    if (user != null) {
-      await userDB.updateUser(user.copyWith(spendingLimit: novoLimite));
-      setState(() => limiteGasto = novoLimite);
-      await carregarValores();
+    try {
+      final user = await userDB.getFirstUser();
+      if (user != null) {
+        await userDB.updateUser(user.copyWith(spendingLimit: novoLimite));
+        setState(() => limiteGasto = novoLimite);
+        await carregarValores();
+      }
+    } catch (e, s) {
+      debugPrint('Erro ao atualizar limite: $e\n$s');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Erro ao atualizar limite.')),
+        );
+      }
     }
   }
 

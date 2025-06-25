@@ -6,7 +6,8 @@ class CurrencyConverterScreen extends StatefulWidget {
   const CurrencyConverterScreen({super.key});
 
   @override
-  State<CurrencyConverterScreen> createState() => _CurrencyConverterScreenState();
+  State<CurrencyConverterScreen> createState() =>
+      _CurrencyConverterScreenState();
 }
 
 class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
@@ -17,6 +18,30 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
   bool _isLoading = false;
   String? _error;
 
+  final List<String> _currencies = [
+    'USD',
+    'BRL',
+    'EUR',
+    'GBP',
+    'ARS',
+    'CAD',
+    'AUD',
+    'JPY',
+    'CHF',
+    'CNY',
+    'BTC',
+    'ETH',
+  ];
+  String _selectedFrom = 'USD';
+  String _selectedTo = 'BRL';
+
+  @override
+  void initState() {
+    super.initState();
+    _fromController.text = _selectedFrom;
+    _toController.text = _selectedTo;
+  }
+
   @override
   void dispose() {
     _amountController.dispose();
@@ -26,25 +51,40 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
   }
 
   Future<void> _convert() async {
+    if (_isLoading) return; // Evita múltiplas conversões simultâneas
     setState(() {
       _isLoading = true;
       _error = null;
       _convertedValue = null;
     });
     try {
-      final amount = double.tryParse(_amountController.text.trim());
-      if (amount == null) {
+      String input = _amountController.text.trim().replaceAll(',', '.');
+      if (input.isEmpty) {
+        setState(() => _error = 'Digite um valor.');
+        return;
+      }
+      final amount = double.tryParse(input);
+      if (amount == null || amount < 0) {
         setState(() => _error = 'Valor inválido.');
         return;
       }
-      final from = _fromController.text.trim().toUpperCase();
-      final to = _toController.text.trim().toUpperCase();
-      final rate = await getExchangeRate(from, to);
+      final from = _selectedFrom;
+      final to = _selectedTo;
+      double rate;
+      try {
+        rate = await getExchangeRate(from, to);
+      } catch (e) {
+        setState(
+          () => _error = 'Erro ao obter taxa de câmbio. Tente novamente.',
+        );
+        return;
+      }
       setState(() {
         _convertedValue = amount * rate;
       });
-    } catch (e) {
-      setState(() => _error = 'Erro: ${e.toString()}');
+    } catch (e, s) {
+      debugPrint('Erro inesperado na conversão: $e\n$s');
+      setState(() => _error = 'Erro inesperado ao converter.');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -72,11 +112,21 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
               children: [
                 SizedBox(
                   width: 120,
-                  child: Utils.buildInputField(
-                    'De',
-                    controller: _fromController,
-                    type: TextInputType.text,
-                    obscure: false,
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedFrom,
+                    items:
+                        _currencies
+                            .map(
+                              (c) => DropdownMenuItem(value: c, child: Text(c)),
+                            )
+                            .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedFrom = value!;
+                        _fromController.text = value;
+                      });
+                    },
+                    decoration: const InputDecoration(labelText: 'De'),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -84,11 +134,21 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
                 const SizedBox(width: 16),
                 SizedBox(
                   width: 120,
-                  child: Utils.buildInputField(
-                    'Para',
-                    controller: _toController,
-                    type: TextInputType.text,
-                    obscure: false,
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedTo,
+                    items:
+                        _currencies
+                            .map(
+                              (c) => DropdownMenuItem(value: c, child: Text(c)),
+                            )
+                            .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedTo = value!;
+                        _toController.text = value;
+                      });
+                    },
+                    decoration: const InputDecoration(labelText: 'Para'),
                   ),
                 ),
               ],
@@ -97,7 +157,7 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
             Utils.buildButton(
               text: 'Converter',
               width: 200,
-              onPressed: _convert,
+              onPressed: _isLoading ? () {} : () => _convert(),
             ),
             const SizedBox(height: 24),
             if (_isLoading) const CircularProgressIndicator(),
@@ -111,7 +171,10 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
                 padding: const EdgeInsets.only(top: 12),
                 child: Text(
                   'Resultado: ${_amountController.text} ${_fromController.text.toUpperCase()} = ${_convertedValue!.toStringAsFixed(2)} ${_toController.text.toUpperCase()}',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
           ],

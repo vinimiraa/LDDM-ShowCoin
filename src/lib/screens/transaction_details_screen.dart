@@ -170,7 +170,8 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
 
   Future<void> _saveTransaction() async {
     final name = _nameController.text.trim();
-    final value = double.tryParse(_valueController.text.trim());
+    final valueText = _valueController.text.trim().replaceAll(',', '.');
+    final value = double.tryParse(valueText);
     final amount = int.tryParse(_amountController.text.trim());
     final date = _dateController.text.trim();
 
@@ -178,24 +179,27 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
       _showError("Preencha todos os campos corretamente.");
       return;
     }
-
-    final newTransaction = TransactionModel(
-      id: null,
-      name: name,
-      value: value,
-      amount: amount,
-      date: date,
-    );
-
-    await _transactionDB.insertTransaction(newTransaction);
-
-    _showSuccess('Transação salva com sucesso!');
-    Navigator.pop(context, true);
+    try {
+      final newTransaction = TransactionModel(
+        id: null,
+        name: name,
+        value: value,
+        amount: amount,
+        date: date,
+      );
+      await _transactionDB.insertTransaction(newTransaction);
+      _showSuccess('Transação salva com sucesso!');
+      Navigator.pop(context, true);
+    } catch (e, s) {
+      debugPrint('Erro ao salvar transação: $e\n$s');
+      _showError('Erro ao salvar transação.');
+    }
   }
 
   Future<void> _editTransaction() async {
     final name = _nameController.text.trim();
-    final value = double.tryParse(_valueController.text.trim());
+    final valueText = _valueController.text.trim().replaceAll(',', '.');
+    final value = double.tryParse(valueText);
     final amount = int.tryParse(_amountController.text.trim());
     final date = _dateController.text.trim();
 
@@ -203,27 +207,32 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
       _showError("Preencha todos os campos corretamente.");
       return;
     }
-
-    final updatedTransaction = widget.transaction!.copyWith(
-      name: name,
-      value: value,
-      amount: amount,
-      date: date,
-    );
-
-    await _transactionDB.updateTransaction(updatedTransaction);
-
-    _showSuccess('Transação editada com sucesso!');
-    Navigator.pop(context, true);
+    try {
+      final updatedTransaction = widget.transaction!.copyWith(
+        name: name,
+        value: value,
+        amount: amount,
+        date: date,
+      );
+      await _transactionDB.updateTransaction(updatedTransaction);
+      _showSuccess('Transação editada com sucesso!');
+      Navigator.pop(context, true);
+    } catch (e, s) {
+      debugPrint('Erro ao editar transação: $e\n$s');
+      _showError('Erro ao editar transação.');
+    }
   }
 
   Future<void> _deleteTransaction() async {
     if (widget.transaction == null) return;
-
-    await _transactionDB.deleteTransaction(widget.transaction!.id!);
-
-    _showSuccess('Transação excluída com sucesso!');
-    Navigator.pop(context, true);
+    try {
+      await _transactionDB.deleteTransaction(widget.transaction!.id!);
+      _showSuccess('Transação excluída com sucesso!');
+      Navigator.pop(context, true);
+    } catch (e, s) {
+      debugPrint('Erro ao excluir transação: $e\n$s');
+      _showError('Erro ao excluir transação.');
+    }
   }
 
   void _showEditDialog() {

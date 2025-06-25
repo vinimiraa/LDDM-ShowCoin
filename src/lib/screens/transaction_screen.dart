@@ -117,16 +117,24 @@ class _TransactionScreenState extends State<TransactionScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  const TransactionDetailsScreen(isNewTransaction: true),
-            ),
-          );
-
-          if (result == true) {
-            await transactionController.loadTransactions();
+          try {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const TransactionDetailsScreen(isNewTransaction: true),
+              ),
+            );
+            if (result == true) {
+              await transactionController.loadTransactions();
+            }
+          } catch (e, s) {
+            debugPrint('Erro ao adicionar transação: $e\n$s');
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Erro ao adicionar transação.')),
+              );
+            }
           }
         },
         backgroundColor: AppColors.backgroundButton,
@@ -140,18 +148,26 @@ class _TransactionScreenState extends State<TransactionScreen> {
   Widget _buildTransactionItem(TransactionModel t) {
     return TextButton(
       onPressed: () async {
-        final result = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => TransactionDetailsScreen(
-              transaction: t,
-              isNewTransaction: false,
+        try {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TransactionDetailsScreen(
+                transaction: t,
+                isNewTransaction: false,
+              ),
             ),
-          ),
-        );
-
-        if (result == true) {
-          await transactionController.loadTransactions();
+          );
+          if (result == true) {
+            await transactionController.loadTransactions();
+          }
+        } catch (e, s) {
+          debugPrint('Erro ao abrir detalhes da transação: $e\n$s');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Erro ao abrir detalhes da transação.')),
+            );
+          }
         }
       },
       child: ListTile(
