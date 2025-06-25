@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:src/database/db.dart'; // ajuste o import conforme seu projeto
+import '../database/db.dart';
+import '../database/transaction_db.dart';
+import '../models/transaction_model.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 import 'utils.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:csv/csv.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -31,18 +38,17 @@ class _ProfileScreenState extends State<SettingsScreen> {
       setState(() {
         nomeUsuario = usuario['name'] ?? 'Fulano de Tal';
         final limiteValue = usuario['spending_limit'];
-          if (limiteValue != null) {
-            if (limiteValue is int) {
-              limiteGastos = limiteValue.toDouble();
-            } else if (limiteValue is double) {
-              limiteGastos = limiteValue;
-            } else {
-              limiteGastos = 0.0;
-            }
+        if (limiteValue != null) {
+          if (limiteValue is int) {
+            limiteGastos = limiteValue.toDouble();
+          } else if (limiteValue is double) {
+            limiteGastos = limiteValue;
           } else {
             limiteGastos = 0.0;
           }
-
+        } else {
+          limiteGastos = 0.0;
+        }
       });
     } else {
       setState(() {
@@ -67,8 +73,10 @@ class _ProfileScreenState extends State<SettingsScreen> {
               nomeUsuario,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            Text("Limite de Gastos: R\$ ${limiteGastos.toStringAsFixed(2)}",
-                style: const TextStyle(color: AppColors.textPrimary)),
+            Text(
+              "Limite de Gastos: R\$ ${limiteGastos.toStringAsFixed(2)}",
+              style: const TextStyle(color: AppColors.textPrimary),
+            ),
             const SizedBox(height: 20),
             ListTile(
               leading: const Icon(Icons.edit),
@@ -77,10 +85,11 @@ class _ProfileScreenState extends State<SettingsScreen> {
                 final result = await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => EditProfileScreen(
-                      nomeAtual: nomeUsuario,
-                      limiteAtual: limiteGastos,
-                    ),
+                    builder:
+                        (context) => EditProfileScreen(
+                          nomeAtual: nomeUsuario,
+                          limiteAtual: limiteGastos,
+                        ),
                   ),
                 );
 
@@ -127,18 +136,93 @@ class _ProfileScreenState extends State<SettingsScreen> {
     );
   }
 
-  void _importarCSV() {
-    debugPrint("Importando dados de um arquivo CSV...");
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("CSV importado com sucesso!")),
+  void _importarCSV() async {
+    // Solicita permissão de armazenamento
+    var status = await Permission.storage.request();
+    if (!status.isGranted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Permissão de armazenamento negada.")),
+      );
+      return;
+    }
+
+    // Abre o seletor de arquivos
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
     );
+
+    if (result == null || result.files.single.path == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Nenhum arquivo selecionado.")),
+      );
+      return;
+    }
+
+    final file = File(result.files.single.path!);
+    final csvString = await file.readAsString();
+    final csvRows = const CsvToListConverter().convert(csvString, eol: '\n');
+
+    int imported = 0;
+    for (int i = 1; i < csvRows.length; i++) {
+      final row = csvRows[i];
+      if (row.length < 5) continue;
+      final transaction = TransactionModel(
+        id: row[0]?.toString(),
+        name: row[1]?.toString() ?? '',
+        value: double.tryParse(row[2].toString()) ?? 0.0,
+        amount: int.tryParse(row[3].toString()) ?? 1,
+        date: row[4]?.toString() ?? '',
+      );
+      await TransactionDB().insertTransaction(transaction);
+      imported++;
+    }
+
+    // Atualize a tela de transações se necessário (ex: Provider, setState, etc.)
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text("$imported transações importadas!")));
   }
 
-  void _exportarCSV() {
-    debugPrint("Exportando dados financeiros para CSV...");
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("CSV exportado com sucesso!")),
-    );
+  void _exportarCSV() async {
+    // Solicita permissão de armazenamento
+    var status = await Permission.storage.request();
+    if (!status.isGranted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Permissão de armazenamento negada.")),
+      );
+      return;
+    }
+
+    // Gera o CSV
+    final csvPath = await TransactionDB().exportToCSV();
+
+    // Move para a pasta Downloads
+    Directory? downloadsDir;
+    if (Platform.isAndroid) {
+      downloadsDir = Directory('/storage/emulated/0/Download');
+    } else {
+      downloadsDir = await getDownloadsDirectory();
+    }
+
+    if (downloadsDir == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Não foi possível acessar a pasta Downloads."),
+        ),
+      );
+      return;
+    }
+
+    final fileName = 'transacoes.csv';
+    final newPath = '${downloadsDir.path}/$fileName';
+    final file = File(csvPath);
+    await file.copy(newPath);
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text("CSV exportado para $newPath")));
   }
 }
 
