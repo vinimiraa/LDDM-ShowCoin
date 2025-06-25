@@ -5,7 +5,7 @@ import 'package:src/screens/utils.dart';
 import 'package:src/database/user_db.dart';
 import 'package:src/models/user_model.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:src/service/notification_service.dart';
+// import 'package:src/service/notification_service.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
@@ -14,7 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Inicializa o serviço de notificações
-  await NotificationService.initialize();
+  // await NotificationService.initialize();
 
   if (!kIsWeb) {
     await _setupLocalDatabase();
