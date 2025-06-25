@@ -5,6 +5,7 @@ import 'screens/home_screen.dart';
 import 'screens/transaction_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/utils.dart';
+import 'screens/currency_converter_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -38,6 +39,7 @@ class _MainScreenState extends State<MainScreen> {
       TransactionScreen(),
       QRCodeScreen(controller: _controller),
       SettingsScreen(),
+      const CurrencyConverterScreen(),
     ];
   }
 
@@ -64,6 +66,12 @@ class _MainScreenState extends State<MainScreen> {
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.settings),
         title: "Configurações",
+        activeColorPrimary: _activeColorButton,
+        inactiveColorPrimary: _inactiveColorButton,
+      ),
+      PersistentBottomNavBarItem(
+        icon: const Icon(Icons.currency_exchange),
+        title: "Conversor",
         activeColorPrimary: _activeColorButton,
         inactiveColorPrimary: _inactiveColorButton,
       ),
