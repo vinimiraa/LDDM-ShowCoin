@@ -6,6 +6,7 @@ import 'package:src/database/user_db.dart';
 import 'package:src/models/user_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:src/service/notification_service.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
@@ -64,6 +65,15 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: AppColors.background,
         fontFamily: 'Inter',
       ),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('pt', 'BR'),
+      ],
+      locale: const Locale('pt', 'BR'),
       home: const StartScreen(),
     );
   }

@@ -8,6 +8,7 @@ import 'dart:io';
 import 'utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:csv/csv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -27,6 +28,19 @@ class _ProfileScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     _carregarPerfil();
+    _carregarPreferencias();
+  }
+
+  Future<void> _carregarPreferencias() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      notificationsEnabled = prefs.getBool('notificationsEnabled') ?? true;
+    });
+  }
+
+  Future<void> _salvarPreferencias() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('notificationsEnabled', notificationsEnabled);
   }
 
   Future<void> _carregarPerfil() async {
@@ -107,19 +121,20 @@ class _ProfileScreenState extends State<SettingsScreen> {
                   notificationsEnabled = value;
                   debugPrint("Notificações ${value ? "ativadas" : "desativadas"}");
                 });
+                _salvarPreferencias();
               },
             ),
-            SwitchListTile(
-              title: const Text("Modo Escuro"),
-              value: isDarkMode,
-              secondary: const Icon(Icons.brightness_6),
-              onChanged: (bool value) {
-                setState(() {
-                  isDarkMode = value;
-                  debugPrint("Modo ${isDarkMode ? "Escuro" : "Claro"} ativado");
-                });
-              },
-            ),
+            // SwitchListTile(
+            //   title: const Text("Modo Escuro"),
+            //   value: isDarkMode,
+            //   secondary: const Icon(Icons.brightness_6),
+            //   onChanged: (bool value) {
+            //     setState(() {
+            //       isDarkMode = value;
+            //       debugPrint("Modo ${isDarkMode ? "Escuro" : "Claro"} ativado");
+            //     });
+            //   },
+            // ),
             ListTile(
               leading: const Icon(Icons.file_upload),
               title: const Text("Importar Dados (CSV)"),
