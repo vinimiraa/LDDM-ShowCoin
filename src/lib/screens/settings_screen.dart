@@ -387,7 +387,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   context,
                   "Atualizar Perfil",
                   "Deseja realmente atualizar o perfil?",
-                  onConfirm: _atualizarPerfil,
+                  onConfirm: () {
+                    Navigator.of(context, rootNavigator: true).pop();
+                    _atualizarPerfil();
+                  },
+                  // onConfirm: () {
+                  //   Navigator.of(context).pop();
+                  //   _atualizarPerfil();
+                  // },
                   confirmText: "Sim, Atualizar",
                   cancelText: "Cancelar",
                 );

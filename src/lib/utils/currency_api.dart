@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 
 Future<double> getExchangeRate(String currency, String baseCurrency) async {
   try {
@@ -26,7 +27,7 @@ Future<double> getExchangeRate(String currency, String baseCurrency) async {
       throw Exception('Falha ao carregar dados: ${response.statusCode}');
     }
   } catch (e, s) {
-    print('Erro ao obter taxa de câmbio: $e\n$s');
+    debugPrint('Erro ao obter taxa de câmbio: $e\n$s');
     rethrow;
   }
 }

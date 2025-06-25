@@ -1,5 +1,6 @@
 import '../models/user_model.dart';
 import 'db.dart';
+import 'package:flutter/foundation.dart';
 
 class UserDB {
   final DatabaseHelper _dbHelper = DatabaseHelper();
@@ -10,7 +11,7 @@ class UserDB {
       final db = await _dbHelper.database;
       return await db.insert(DatabaseHelper.userTable, user.toMap());
     } catch (e, s) {
-      print('Erro ao inserir usuário: $e\n$s');
+      debugPrint('Erro ao inserir usuário: $e\n$s');
       return 0;
     }
   }
@@ -31,7 +32,7 @@ class UserDB {
       }
       return null;
     } catch (e, s) {
-      print('Erro ao buscar usuário por ID: $e\n$s');
+      debugPrint('Erro ao buscar usuário por ID: $e\n$s');
       return null;
     }
   }
@@ -46,7 +47,7 @@ class UserDB {
       }
       return null;
     } catch (e, s) {
-      print('Erro ao buscar primeiro usuário: $e\n$s');
+      debugPrint('Erro ao buscar primeiro usuário: $e\n$s');
       return null;
     }
   }
@@ -62,7 +63,7 @@ class UserDB {
         whereArgs: [user.id],
       );
     } catch (e, s) {
-      print('Erro ao atualizar usuário: $e\n$s');
+      debugPrint('Erro ao atualizar usuário: $e\n$s');
       return 0;
     }
   }
@@ -77,7 +78,7 @@ class UserDB {
         whereArgs: [id],
       );
     } catch (e, s) {
-      print('Erro ao deletar usuário: $e\n$s');
+      debugPrint('Erro ao deletar usuário: $e\n$s');
       return 0;
     }
   }

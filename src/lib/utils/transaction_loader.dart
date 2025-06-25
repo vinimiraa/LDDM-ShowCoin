@@ -1,4 +1,5 @@
 import '../database/db.dart';
+import 'package:flutter/foundation.dart';
 
 /// Retorna uma lista com as transações (nome, valor, data)
 Future<List<Map<String, dynamic>>> carregarTransacoesExternamente() async {
@@ -13,7 +14,7 @@ Future<List<Map<String, dynamic>>> carregarTransacoesExternamente() async {
     ''');
     return result;
   } catch (e, s) {
-    print('Erro ao carregar transações externamente: $e\n$s');
+    debugPrint('Erro ao carregar transações externamente: $e\n$s');
     return [];
   }
 }
