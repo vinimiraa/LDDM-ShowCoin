@@ -23,19 +23,21 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
   final _nameController = TextEditingController();
   final _amountController = TextEditingController();
   final _dateController = TextEditingController();
+  final _valueController = TextEditingController();
 
   final TransactionDB _transactionDB = TransactionDB();
 
   @override
   void initState() {
     super.initState();
-
     if (widget.isNewTransaction) {
       _dateController.text = DateFormat('dd/MM/yyyy').format(DateTime.now());
+      _amountController.text = '1'; // valor padrão para quantidade
     } else {
       _nameController.text = widget.transaction?.name ?? '';
-      _amountController.text = widget.transaction?.value.toString() ?? '';
+      _amountController.text = widget.transaction?.amount.toString() ?? '1';
       _dateController.text = widget.transaction?.date ?? '';
+      _valueController.text = widget.transaction?.value.toString() ?? '';
     }
   }
 
@@ -44,6 +46,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
     _nameController.dispose();
     _amountController.dispose();
     _dateController.dispose();
+    _valueController.dispose();
     super.dispose();
   }
 
@@ -78,8 +81,15 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
             width: 300,
           ),
           Utils.buildInputField(
-            "Valor",
+            "Quantidade",
             controller: _amountController,
+            type: TextInputType.number,
+            obscure: false,
+            width: 300,
+          ),
+          Utils.buildInputField(
+            "Valor",
+            controller: _valueController,
             type: TextInputType.number,
             obscure: false,
             width: 300,
@@ -113,6 +123,7 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Descrição: ${t.name}', style: const TextStyle(fontSize: 18)),
+        Text('Quantidade: ${t.amount}', style: const TextStyle(fontSize: 18)),
         Text('Valor: R\$ ${t.value.toStringAsFixed(2)}', style: const TextStyle(fontSize: 18)),
         Text('Data: ${t.date}', style: const TextStyle(fontSize: 18)),
         const SizedBox(height: 20),
@@ -159,10 +170,11 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
 
   Future<void> _saveTransaction() async {
     final name = _nameController.text.trim();
-    final amount = double.tryParse(_amountController.text.trim());
+    final value = double.tryParse(_valueController.text.trim());
+    final amount = int.tryParse(_amountController.text.trim());
     final date = _dateController.text.trim();
 
-    if (name.isEmpty || amount == null || date.isEmpty) {
+    if (name.isEmpty || value == null || amount == null || date.isEmpty) {
       _showError("Preencha todos os campos corretamente.");
       return;
     }
@@ -170,7 +182,8 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
     final newTransaction = TransactionModel(
       id: null,
       name: name,
-      value: amount,
+      value: value,
+      amount: amount,
       date: date,
     );
 
@@ -182,17 +195,19 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
 
   Future<void> _editTransaction() async {
     final name = _nameController.text.trim();
-    final amount = double.tryParse(_amountController.text.trim());
+    final value = double.tryParse(_valueController.text.trim());
+    final amount = int.tryParse(_amountController.text.trim());
     final date = _dateController.text.trim();
 
-    if (name.isEmpty || amount == null || date.isEmpty) {
+    if (name.isEmpty || value == null || amount == null || date.isEmpty) {
       _showError("Preencha todos os campos corretamente.");
       return;
     }
 
     final updatedTransaction = widget.transaction!.copyWith(
       name: name,
-      value: amount,
+      value: value,
+      amount: amount,
       date: date,
     );
 
@@ -213,8 +228,9 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
 
   void _showEditDialog() {
     _nameController.text = widget.transaction?.name ?? '';
-    _amountController.text = widget.transaction?.value.toString() ?? '';
+    _amountController.text = widget.transaction?.amount.toString() ?? '1';
     _dateController.text = widget.transaction?.date ?? '';
+    _valueController.text = widget.transaction?.value.toString() ?? '';
 
     showDialog(
       context: context,
@@ -231,8 +247,15 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
                 width: 300,
               ),
               Utils.buildInputField(
-                "Valor",
+                "Quantidade",
                 controller: _amountController,
+                type: TextInputType.number,
+                obscure: false,
+                width: 300,
+              ),
+              Utils.buildInputField(
+                "Valor",
+                controller: _valueController,
                 type: TextInputType.number,
                 obscure: false,
                 width: 300,

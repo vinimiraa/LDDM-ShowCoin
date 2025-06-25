@@ -6,6 +6,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:src/database/transaction_db.dart';
 import 'package:src/models/transaction_model.dart';
+import 'package:src/controllers/transaction_controller.dart';
 import 'utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
@@ -85,8 +86,11 @@ Future<void> getQRCodeInformation(String url) async {
 
   final transactionDB = TransactionDB();
   for (var item in transactionsList) {
-    transactionDB.insertTransaction(item);
+    await transactionDB.insertTransaction(item);
   }
+
+  // Atualiza a tela de transações em tempo real
+  await transactionController.loadTransactions();
 }
 
 List<TransactionModel> parseHtml(String html) {

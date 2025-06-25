@@ -9,6 +9,7 @@ import 'utils.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:csv/csv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../controllers/transaction_controller.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -193,7 +194,8 @@ class _ProfileScreenState extends State<SettingsScreen> {
       imported++;
     }
 
-    // Atualize a tela de transações se necessário (ex: Provider, setState, etc.)
+    // Atualiza a tela de transações em tempo real
+    await transactionController.loadTransactions();
 
     ScaffoldMessenger.of(
       context,

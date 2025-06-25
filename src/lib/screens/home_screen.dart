@@ -28,12 +28,14 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
   void initState() {
     super.initState();
     widget.controller.addListener(_handleTabChange);
+    transactionController.addListener(_onTransactionsChanged);
     carregarValores();
   }
 
   @override
   void dispose() {
     widget.controller.removeListener(_handleTabChange);
+    transactionController.removeListener(_onTransactionsChanged);
     super.dispose();
   }
 
@@ -41,6 +43,10 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     if (widget.controller.index == 0) {
       carregarValores();
     }
+  }
+
+  void _onTransactionsChanged() {
+    carregarValores();
   }
 
   Future<void> carregarValores() async {
