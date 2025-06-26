@@ -1,5 +1,9 @@
-name: src
-description: "A new Flutter project."
+name: showcoin
+description: >-
+  O ShowCoin é um aplicativo mobile para controle financeiro pessoal, com registro
+  automático de despesas via OCR, gráficos dinâmicos, alertas de orçamento,
+  exportação de dados em CSV e integração com cotações de moedas em tempo real.
+  Ideal para quem busca praticidade, segurança e automação na gestão das finanças.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -36,7 +40,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   persistent_bottom_nav_bar: any
   animations: ^2.0.11
-  intl: ^0.19.0
+  # intl: ^0.19.0
+  intl: ^0.20.2
   graphic: ^2.5.1
   fl_chart: ^0.70.2
   sqflite: ^2.0.0+4
@@ -72,7 +77,7 @@ flutter_icons:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
 
-# For information on the generic Dart part of this file, see the
+# For information on the generic Dart part of "pubspec.yaml""."this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.

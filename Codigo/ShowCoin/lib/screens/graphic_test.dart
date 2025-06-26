@@ -1,6 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:src/screens/utils.dart';
+import 'utils.dart';
 
 class PieChartGastos extends StatefulWidget {
   final double limiteGasto;
@@ -30,11 +30,7 @@ class PieChartGanhoDespesaState extends State<PieChartGastos> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
-                Icon(
-                  Icons.warning,
-                  color: AppColors.contentColorRed,
-                  size: 24
-                ),
+                Icon(Icons.warning, color: AppColors.contentColorRed, size: 24),
                 SizedBox(width: 6),
                 Text(
                   'Limite ultrapassado',

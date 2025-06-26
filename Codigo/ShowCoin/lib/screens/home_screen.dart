@@ -4,8 +4,8 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'transaction_details_screen.dart';
 import '../database/user_db.dart';
 // import '../main.dart';
-import '../screens/graphic_test.dart';
-import '../screens/utils.dart';
+import 'graphic_test.dart';
+import 'utils.dart';
 import '../controllers/transaction_controller.dart';
 
 class HomeScreen extends StatefulWidget {

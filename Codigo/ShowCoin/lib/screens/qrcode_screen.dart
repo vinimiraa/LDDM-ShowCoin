@@ -3,9 +3,9 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
-import 'package:src/database/transaction_db.dart';
-import 'package:src/models/transaction_model.dart';
-import 'package:src/controllers/transaction_controller.dart';
+import '../database/transaction_db.dart';
+import '../models/transaction_model.dart';
+import '../controllers/transaction_controller.dart';
 import 'utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart';
@@ -19,7 +19,8 @@ class QRCodeScreen extends StatefulWidget {
   State<QRCodeScreen> createState() => _QRCodeScreenState();
 }
 
-class _QRCodeScreenState extends State<QRCodeScreen> with WidgetsBindingObserver {
+class _QRCodeScreenState extends State<QRCodeScreen>
+    with WidgetsBindingObserver {
   final MobileScannerController _scannerController = MobileScannerController();
 
   @override
@@ -57,11 +58,9 @@ class _QRCodeScreenState extends State<QRCodeScreen> with WidgetsBindingObserver
               await getQRCodeInformation(result.barcodes.first.rawValue!);
               _scannerController.stop();
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('QR Code lido com sucesso!'),
-                ),
+                SnackBar(content: Text('QR Code lido com sucesso!')),
               );
-              
+
               Future.delayed(const Duration(seconds: 1), () {
                 widget.controller.jumpToTab(1);
               });
@@ -107,7 +106,9 @@ List<TransactionModel> parseHtml(String html) {
 
       // Parse amount and value to appropriate types
       int? amount = int.tryParse(amountStr.replaceAll(RegExp(r'[^0-9]'), ''));
-      double? value = double.tryParse(valueStr.replaceAll(RegExp(r'[^0-9.,]'), '').replaceAll(',', '.'));
+      double? value = double.tryParse(
+        valueStr.replaceAll(RegExp(r'[^0-9.,]'), '').replaceAll(',', '.'),
+      );
 
       transactions.add(
         TransactionModel(

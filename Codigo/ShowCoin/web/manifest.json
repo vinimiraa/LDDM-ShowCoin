@@ -1,6 +1,6 @@
 {
-    "name": "src",
-    "short_name": "src",
+    "name": "showcoin",
+    "short_name": "showcoin",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:src/screens/start_screen.dart';
-import 'package:src/screens/utils.dart';
-import 'package:src/database/user_db.dart';
-import 'package:src/models/user_model.dart';
+import 'screens/start_screen.dart';
+import 'screens/utils.dart';
+import 'database/user_db.dart';
+import 'models/user_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

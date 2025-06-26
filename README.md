@@ -1,66 +1,58 @@
-# **ShowCoin – Controle Financeiro Inteligente**
+# ShowCoin – Controle Financeiro Inteligente
 
-## **1. Visão Geral**
+## Visão Geral
 
-O **ShowCoin** é um aplicativo mobile desenvolvido para facilitar o **gerenciamento financeiro pessoal**, permitindo que 
-os usuários registrem e acompanhem seus gastos de maneira automatizada e eficiente. Através do escaneamento de notas 
-fiscais e recibos, o aplicativo simplifica o processo de registro de despesas, proporcionando mais controle e 
-praticidade.
+O **ShowCoin** é um aplicativo mobile desenvolvido para simplificar e automatizar o **gerenciamento financeiro pessoal**, oferecendo uma experiência intuitiva, moderna e eficiente. Com funcionalidades baseadas em tecnologias como OCR (reconhecimento óptico de caracteres), banco de dados local e integração com APIs externas, o aplicativo permite registrar despesas de forma prática e acompanhar as finanças com precisão.
 
-### **Por que usar o ShowCoin?**
+Seja para estudantes, profissionais ou qualquer pessoa que deseje organizar seus gastos, o ShowCoin é a ferramenta ideal para manter o orçamento sob controle de forma segura e inteligente.
 
-- **Automação Inteligente**: Registre seus gastos sem esforço.
-- **Relatórios Detalhados**: Visualize suas finanças de forma clara.
-- **Alertas e Notificações**: Mantenha o controle sobre seu orçamento.
-- **Interface Intuitiva**: Fácil de usar, acessível para todos.
+## Principais Funcionalidades
 
-## **2. Funcionalidades Principais**
+### Captura Automática de Notas Fiscais
+- Escaneamento de recibos e notas fiscais via câmera do dispositivo.
+- Extração automática de valores, datas e categorias.
+- Possibilidade de edição e categorização manual.
 
-### **📸 Captura Automática de Notas Fiscais**
+### Relatórios Personalizados
+- Gráficos dinâmicos com visão mensal e por categoria.
+- Comparação de gastos entre períodos.
+- Painel de acompanhamento financeiro em tempo real.
 
-- Escaneie recibos e notas fiscais utilizando a câmera do seu celular.
-- Extração automática dos valores e categorias dos gastos.
-- Possibilidade de ajuste e categorização manual.
+### Alertas e Lembretes
+- Notificações para registro de despesas.
+- Avisos sobre orçamento ultrapassado ou próximo do limite.
+- Lembretes de vencimento de contas.
 
-### **📊 Relatórios Personalizados**
+### Definição de Orçamento
+- Estabelecimento de metas por categoria de gasto.
+- Visualização de saldo disponível e alertas preventivos.
+- Gerenciamento de hábitos financeiros.
 
-- Painel interativo para acompanhamento financeiro.
-- Gráficos detalhados sobre suas despesas.
-- Comparação mensal para análise de padrões de consumo.
+### Histórico de Transações
+- Registro completo e filtrável de despesas.
+- Pesquisa por data, categoria ou valor.
+- Exportação de dados em CSV para uso externo.
 
-### **🔔 Alertas e Lembretes**
+## Detalhes Técnicos
 
-- Notificações para registrar despesas diariamente.
-- Avisos quando o orçamento estiver próximo do limite.
-- Lembretes sobre vencimento de contas e compromissos financeiros.
+- **Flutter** com **Dart**: para desenvolvimento mobile multiplataforma.
+- **SQLite**: banco de dados local com estrutura relacional.
+- **OCR (Reconhecimento de Texto)**: para leitura automatizada das notas fiscais.
+- **AwesomeAPI**: integração para obter cotações de moedas em tempo real (ex: USD → BRL).
+- **Arquitetura modular**: separação em camadas para dados, lógica e interface.
 
-### **💰 Definição de Orçamento**
+## Diferenciais do ShowCoin
 
-- Estabeleça metas de gastos por categoria.
-- Acompanhe seu saldo disponível em tempo real.
-- Alertas sobre gastos excessivos.
+- **Automação Inteligente** – Gaste menos tempo registrando e mais tempo planejando.
+- **Visualização Clara** – Relatórios e gráficos para tomada de decisões assertivas.
+- **Experiência Intuitiva** – Interface acessível para todos os perfis de usuário.
+- **Segurança e Desempenho** – Dados armazenados localmente e protegidos.
+- **Uso Offline** – Não depende de internet para a maioria das funcionalidades.
 
-### **📂 Histórico de Transações**
+## 👥 Integrantes
 
-- Registro detalhado de todas as despesas.
-- Filtros para pesquisa rápida por período e categoria.
-- Exportação de dados para análise externa.
-
-## **3. Benefícios do ShowCoin**
-
-- ✅ **Economia de Tempo** – Registre despesas rapidamente sem precisar digitar manualmente.
-- ✅ **Precisão Financeira** – Monitore seus gastos e tome decisões mais conscientes.
-- ✅ **Melhor Planejamento** – Estabeleça metas e acompanhe seu progresso.
-- ✅ **Segurança** – Seus dados protegidos com criptografia.
-
-## **4. Conclusão**
-
-O **ShowCoin** é a solução ideal para quem deseja um controle financeiro eficiente, automatizado e de fácil utilização. 
-Com ele, você economiza tempo, evita surpresas no orçamento e mantém suas finanças sempre organizadas. 
-
-## **Integrantes**
-
-- [André Luis](https://andrels.net/)  
-- [Breno Pires](https://www.linkedin.com/in/brenopiressantos/)  
-- [Caio Faria](https://www.linkedin.com/in/caiofdiniz)  
-- [Vinícius Miranda](https://www.linkedin.com/in/vinimiraa/)  
+- [André Luís Silva](https://andrels.net/)
+- [Breno Pires](https://www.linkedin.com/in/brenopiressantos/)
+- [Caio Diniz Faria](https://www.linkedin.com/in/caiofdiniz)
+- [Vinícius Miranda](https://www.linkedin.com/in/vinimiraa/)
+nças organizadas e sob controle a qualquer momento.
