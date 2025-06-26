@@ -217,7 +217,7 @@ class _ProfileScreenState extends State<SettingsScreen> {
           name: row[1]?.toString() ?? '',
           value: double.tryParse(row[2].toString()) ?? 0.0,
           amount: int.tryParse(row[3].toString()) ?? 1,
-          date: row[4]?.toString() ?? '',
+          date: DateTime.tryParse(row[4]?.toString() ?? '')?.toIso8601String() ?? '',
         );
         try {
           await TransactionDB().insertTransaction(transaction);

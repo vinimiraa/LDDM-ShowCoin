@@ -1,7 +1,6 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:src/database/transaction_db.dart';
@@ -80,9 +79,9 @@ Future<void> getQRCodeInformation(String url) async {
     return;
   }
 
-  var html = (await http.get(Uri.parse(url))).body;
+  var htmlContent = (await http.get(Uri.parse(url))).body;
 
-  var transactionsList = parseHtml(html);
+  var transactionsList = parseHtml(htmlContent);
 
   final transactionDB = TransactionDB();
   for (var item in transactionsList) {
@@ -96,19 +95,6 @@ Future<void> getQRCodeInformation(String url) async {
 List<TransactionModel> parseHtml(String html) {
   final document = parse(html);
   final table = document.querySelector("#myTable");
-  final dateStr = document.querySelectorAll('#accordion table')[5].querySelector("tbody td:nth-child(4)")?.text.trim() ?? "";
-
-  // Conversão para ISO 8601
-  String dateIso = "";
-  if (dateStr.isNotEmpty) {
-    try {
-      final inputFormat = DateFormat("dd/MM/yyyy HH:mm:ss");
-      final dateTime = inputFormat.parse(dateStr);
-      dateIso = dateTime.toIso8601String();
-    } catch (e) {
-      dateIso = "";
-    }
-  }
 
   List<TransactionModel> transactions = [];
   var rows = table?.querySelectorAll("tr");
@@ -128,7 +114,7 @@ List<TransactionModel> parseHtml(String html) {
           name: name,
           amount: amount ?? 1,
           value: value ?? 0.0,
-          date: dateIso.isNotEmpty ? dateIso : DateTime.now().toIso8601String(),
+          date: DateTime.now().toIso8601String(),
         ),
       );
     }

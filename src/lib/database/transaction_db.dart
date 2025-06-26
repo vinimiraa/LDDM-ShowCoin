@@ -57,6 +57,25 @@ class TransactionDB {
     }
   }
 
+  Future<TransactionModel?> getTransactionByName(String name) async {
+    try {
+      final db = await _dbHelper.database;
+      final result = await db.query(
+        DatabaseHelper.transactionTable,
+        where: 'name = ?',
+        whereArgs: [name],
+        limit: 1,
+      );
+      if (result.isNotEmpty) {
+        return TransactionModel.fromMap(result.first);
+      }
+      return null;
+    } catch (e, s) {
+      debugPrint('Erro ao buscar transação por nome: $e\n$s');
+      return null;
+    }
+  }
+
   /// Atualiza uma transação
   Future<int> updateTransaction(TransactionModel transaction) async {
     try {

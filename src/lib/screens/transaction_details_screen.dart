@@ -173,7 +173,14 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
     final valueText = _valueController.text.trim().replaceAll(',', '.');
     final value = double.tryParse(valueText);
     final amount = int.tryParse(_amountController.text.trim());
-    final date = _dateController.text.trim();
+    String date = _dateController.text.trim();
+    // Converte de dd/MM/yyyy para ISO 8601 (yyyy-MM-dd)
+    try {
+      final parsedDate = DateFormat('dd/MM/yyyy').parse(date);
+      date = DateFormat('yyyy-MM-dd').format(parsedDate);
+    } catch (_) {
+      // Se falhar, mantém o valor original
+    }
 
     if (name.isEmpty || value == null || amount == null || date.isEmpty) {
       _showError("Preencha todos os campos corretamente.");
@@ -226,7 +233,12 @@ class _TransactionDetailsScreenState extends State<TransactionDetailsScreen> {
   Future<void> _deleteTransaction() async {
     if (widget.transaction == null) return;
     try {
-      await _transactionDB.deleteTransaction(widget.transaction!.id!);
+      final transaction = await _transactionDB.getTransactionByName(widget.transaction!.name);
+      if (transaction == null || transaction.id == null) {
+        _showError('Transação não encontrada.');
+        return;
+      }
+      await _transactionDB.deleteTransaction(transaction.id!);
       _showSuccess('Transação excluída com sucesso!');
       Navigator.pop(context, true);
     } catch (e, s) {
