@@ -5,7 +5,6 @@ import 'package:src/screens/utils.dart';
 import 'package:src/database/user_db.dart';
 import 'package:src/models/user_model.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:src/services/notification_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -14,19 +13,12 @@ final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<v
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    await NotificationService.initialize();
     await solicitarPermissaoNotificacao();
     if (!kIsWeb) {
       await _setupLocalDatabase();
     } else {
       debugPrint('Executando na web. Banco local não utilizado.');
     }
-    // TESTE: dispara uma notificação local ao abrir o app
-    // await NotificationService.showLimitWarning(150.0, 200.0);
-    await NotificationService.showNotification(
-      title: 'Bem-vindo ao Show Coin',
-      body: 'Seu app de controle financeiro está pronto para uso!',
-    );
   } catch (e, s) {
     debugPrint('Erro na inicialização do app: $e\n$s');
   }
