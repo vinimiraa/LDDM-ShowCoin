@@ -123,14 +123,17 @@ List<TransactionModel> parseHtml(String html) {
       int? amount = int.tryParse(amountStr.replaceAll(RegExp(r'[^0-9]'), ''));
       double? value = double.tryParse(valueStr.replaceAll(RegExp(r'[^0-9.,]'), '').replaceAll(',', '.'));
 
-      transactions.add(TransactionModel(
-        name: name,
-        amount: amount ?? 1,
-        value: value ?? 0.0,
-        date: dateIso.isNotEmpty ? dateIso : DateTime.now().toIso8601String(),
-      ));
+      transactions.add(
+        TransactionModel(
+          name: name,
+          amount: amount ?? 1,
+          value: value ?? 0.0,
+          date: dateIso.isNotEmpty ? dateIso : DateTime.now().toIso8601String(),
+        ),
+      );
     }
   }
 
-  return transactions;
+  // Normaliza todas as transações para o formato padrão
+  return transactions.map(TransactionModel.normalize).toList();
 }

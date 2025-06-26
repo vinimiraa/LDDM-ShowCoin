@@ -49,6 +49,30 @@ class TransactionModel {
     );
   }
 
+  static TransactionModel normalize(TransactionModel t) {
+    // Nome limpo
+    final name = t.name.trim();
+    // Valor como double, aceitando vírgula ou ponto
+    final value =
+        double.tryParse(t.value.toString().replaceAll(',', '.')) ?? 0.0;
+    // Quantidade como int
+    final amount = int.tryParse(t.amount.toString()) ?? 1;
+    // Data em ISO 8601
+    String dateIso;
+    try {
+      dateIso = DateTime.parse(t.date).toIso8601String();
+    } catch (_) {
+      dateIso = DateTime.now().toIso8601String();
+    }
+    return TransactionModel(
+      id: t.id,
+      name: name,
+      value: value,
+      amount: amount,
+      date: dateIso,
+    );
+  }
+
   @override
   String toString() {
     return 'TransactionModel(id: $id, name: $name, value: $value, date: $date)';

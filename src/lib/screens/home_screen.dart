@@ -29,7 +29,9 @@ class _HomeScreenState extends State<HomeScreen> with RouteAware {
     super.initState();
     widget.controller.addListener(_handleTabChange);
     transactionController.addListener(_onTransactionsChanged);
-    carregarValores();
+    transactionController.loadTransactions().then((_) {
+      carregarValores();
+    });
   }
 
   @override
