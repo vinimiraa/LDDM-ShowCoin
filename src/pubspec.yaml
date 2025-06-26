@@ -36,7 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   persistent_bottom_nav_bar: any
   animations: ^2.0.11
-  intl: ^0.19.0
+  intl: ^0.20.2
+  # intl: ^0.19.0
   graphic: ^2.5.1
   fl_chart: ^0.70.2
   sqflite: ^2.0.0+4
@@ -56,6 +57,12 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/showcoin_icon.png" # Caminho do novo ícone
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
