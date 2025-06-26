@@ -55,4 +55,3 @@ Seja para estudantes, profissionais ou qualquer pessoa que deseje organizar seus
 - [Breno Pires](https://www.linkedin.com/in/brenopiressantos/)
 - [Caio Diniz Faria](https://www.linkedin.com/in/caiofdiniz)
 - [Vinícius Miranda](https://www.linkedin.com/in/vinimiraa/)
-nças organizadas e sob controle a qualquer momento.
